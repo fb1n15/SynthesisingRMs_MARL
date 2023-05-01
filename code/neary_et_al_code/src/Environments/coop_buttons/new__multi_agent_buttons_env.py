@@ -2,7 +2,6 @@ import os
 import random
 import sys
 from enum import Enum
-
 import numpy as np
 from reward_machines.sparse_reward_machine import SparseRewardMachine
 
@@ -12,18 +11,21 @@ sys.path.append('../../')
 
 class Actions(Enum):
     """
-    Enum with the actions that the agent can execute
+    Enumeration class with the actions that the agent can execute
     """
     up = 0  # move up
     right = 1  # move right
     down = 2  # move down
     left = 3  # move left
-    none = 4  # none
+    none = 4  # do nothing
 
 
-class MultiAgentButtonsEnv:
+class NewMultiAgentButtonsEnv:
+    """
+    Class representing the multi-agent buttons environment.
+    """
 
-    def __init__(self, rm_file, num_agents, env_settings, strategy_rm=False, nonmarkovian=False):
+    def __init__(self, rm_file, num_agents, env_settings, strategy_rm=False, nonmarkovian=False, verbose=False):
         """
         Initialize environment.
 
@@ -41,22 +43,25 @@ class MultiAgentButtonsEnv:
         self.env_settings = env_settings
         self.num_agents = num_agents
 
-        self._load_map()
-        self.reward_machine = SparseRewardMachine(rm_file)
+        self._load_map()  # Load the map of the environment
+        self.reward_machine = SparseRewardMachine(rm_file)  # Load the reward machine
 
         self.u = self.reward_machine.get_initial_state()
         self.last_action = np.full(self.num_agents, -1, dtype=int)  # Initialize last action with garbage values
 
+        # all buttons are initially unpushed
         self.yellow_button_pushed = False
         self.green_button_pushed = False
         self.red_button_pushed = False
+        self.purple_button_pushed = False  # Button that is purple
 
         self.strategy_rm = strategy_rm
         self.nonmarkovian = nonmarkovian
+        self.verbose = verbose  # Whether or not to print out debug statements
 
     def _load_map(self):
         """
-        Initialize the environment.
+        Load the map of the environment.
         """
         self.Nr = self.env_settings['Nr']
         self.Nc = self.env_settings['Nc']
@@ -69,14 +74,12 @@ class MultiAgentButtonsEnv:
             self.s_i[i] = initial_states[i]
 
         # Populate the map with markers
-        self.objects = {}
-        self.objects[self.env_settings['goal_location']] = "g"  # goal location
-        self.objects[self.env_settings['yellow_button']] = 'yb'
-        self.objects[self.env_settings['green_button']] = 'gb'
-        self.objects[self.env_settings['red_button']] = 'rb'
+        self.objects = {self.env_settings['goal_location']: "g", self.env_settings['yellow_button']: 'yb',
+                        self.env_settings['green_button']: 'gb', self.env_settings['red_button']: 'rb'}
         self.yellow_tiles = self.env_settings['yellow_tiles']
         self.green_tiles = self.env_settings['green_tiles']
         self.red_tiles = self.env_settings['red_tiles']
+        self.purple_tiles = self.env_settings['purple_tiles']  # Tiles that are purple
 
         self.p = self.env_settings['p']
 
@@ -146,24 +149,45 @@ class MultiAgentButtonsEnv:
         (row1, col1) = self.get_state_description(s_next[agent1])
         (row2, col2) = self.get_state_description(s_next[agent2])
         (row3, col3) = self.get_state_description(s_next[agent3])
-
-        if (row1, col1) == self.env_settings['yellow_button']:
-            self.yellow_button_pushed = True
-        if (row2, col2) == self.env_settings['green_button']:
-            self.green_button_pushed = True
-
         (row2_last, col2_last) = self.get_state_description(s[agent2])
         (row3_last, col3_last) = self.get_state_description(s[agent3])
+
+        # event: yellow button pushed
+        if (row1, col1) == self.env_settings['yellow_button']:
+            self.yellow_button_pushed = True
+            if self.verbose:
+                print("Yellow button pushed")
+
+        # event: green button pushed
+        if (row2, col2) == self.env_settings['green_button']:
+            self.green_button_pushed = True
+            if self.verbose:
+                print("Green button pushed")
+
+        # event: red button pushed
         if ((row2, col2) == self.env_settings['red_button']) and ((row3, col3) == self.env_settings['red_button']) and (
                 (row2_last, col2_last) == self.env_settings['red_button']) and (
                 (row3_last, col3_last) == self.env_settings['red_button']):
             self.red_button_pushed = True
+            if self.verbose:
+                print("Red button pushed")
+
+        # event: purple button pushed
+        if ((row2, col2) == self.env_settings['purple_button']) and (
+                (row3, col3) == self.env_settings['purple_button']) and (
+                (row2_last, col2_last) == self.env_settings['purple_button']) and (
+                (row3_last, col3_last) == self.env_settings['purple_button']):
+            self.purple_button_pushed = True
+            if self.verbose:
+                print("Purple button pushed")
 
         if self.strategy_rm:
             l = self.get_strategy_mdp_label(s, s_next, self.u)
         else:
             # Get the MDP label for this step
             l = self.get_mdp_label(s, s_next, self.u)
+        if self.verbose:
+            print("MDP label: ", l)
         r = 0
 
         for e in l:
@@ -172,6 +196,11 @@ class MultiAgentButtonsEnv:
             r = r + self.reward_machine.get_reward(self.u, u2)
             # Update the reward machine state
             self.u = u2
+
+        if self.verbose:
+            print("Next Environment State: ", s_next)
+            print("Next Reward Machine State: ", self.u)
+            print("Reward: ", r)
 
         return r, l, s_next
 
@@ -194,6 +223,10 @@ class MultiAgentButtonsEnv:
         last_action : int
             Last action the agent truly took because of slip probability.
         """
+        if self.verbose:
+            print("Current Environment State: ", s)
+            print("Agent ID: ", agent_id)
+            print("Action: ", a)
         slip_p = [self.p, (1 - self.p) / 2, (1 - self.p) / 2]
         check = random.random()
 
@@ -243,6 +276,11 @@ class MultiAgentButtonsEnv:
 
         # If the appropriate button hasn't yet been pressed, don't allow the agent into the colored region
         if agent_id == 0:
+            # cannot go to purple region unless the purple button has been pressed
+            if self.u != 11:
+                if (row, col) in self.purple_tiles:
+                    s_next = s
+            # cannot go to red region unless the red button has been pressed
             if self.strategy_rm:
                 if (self.u == 0) or (self.u == 1) or (self.u == 2) or (self.u == 3 and self.nonmarkovian):
                     if (row, col) in self.red_tiles:
@@ -253,7 +291,7 @@ class MultiAgentButtonsEnv:
                     if (row, col) in self.red_tiles:
                         s_next = s
         if agent_id == 1:
-            if (self.u == 0):
+            if self.u == 0:
                 if (row, col) in self.yellow_tiles:
                     s_next = s
         if agent_id == 2:
@@ -262,6 +300,8 @@ class MultiAgentButtonsEnv:
                     s_next = s
 
         last_action = a_
+        if self.verbose:
+            print("Next Environment State: ", s_next)
         return s_next, last_action
 
     def get_state_from_description(self, row, col):
@@ -302,7 +342,7 @@ class MultiAgentButtonsEnv:
         row = np.floor_divide(s, self.Nr)
         col = np.mod(s, self.Nc)
 
-        return (row, col)
+        return row, col
 
     def get_actions(self, id):
         """
@@ -466,6 +506,8 @@ class MultiAgentButtonsEnv:
             # Check if agent 1 has reached the goal
             if (row1, col1) == self.env_settings['goal_location']:
                 l.append('g')
+        if self.verbose:
+            print("Event (mdp) Label: ", l)
         return l
 
     ################## HRL-RELATED METHODS ######################################
@@ -491,18 +533,21 @@ class MultiAgentButtonsEnv:
         options_list = []
 
         if agent_id == agent1:
-            options_list.append('w1')
-            options_list.append('by')
-            options_list.append('g')
+            options_list.append('w1')  # wait for agent 1??
+            options_list.append('by')  # press yellow button
+            options_list.append("a1down")
+            options_list.append('g')  # go to goal
 
         if agent_id == agent2:
             options_list.append('w2')
             options_list.append('bg')
             options_list.append('a2br')
+            options_list.append('a2bp')  # press the purple button
 
         if agent_id == agent3:
             options_list.append('w3')
             options_list.append('a3br')
+            options_list.append('a3bp')  # press the purple button
 
         return options_list
 
@@ -522,18 +567,26 @@ class MultiAgentButtonsEnv:
             avail_options.append('w1')
             avail_options.append('by')
             if self.red_button_pushed:
-                avail_options.append('g')
+                avail_options.append('a1down')
+                if self.purple_button_pushed:
+                    avail_options.append('g')
         if agent_id == agent2:
             avail_options.append('w2')
             if self.yellow_button_pushed:
                 avail_options.append('bg')
                 avail_options.append('a2br')
+                if self.red_button_pushed:
+                    avail_options.append('a2bp')
 
         if agent_id == agent3:
             avail_options.append('w3')
             if self.green_button_pushed:
                 avail_options.append('a3br')
+                if self.red_button_pushed:
+                    avail_options.append('a3bp')
 
+        if self.verbose:
+            print(f"Agent {agent_id}'s avail options: {avail_options}")
         return avail_options
 
     def get_avail_meta_action_indeces(self, agent_id):
@@ -576,6 +629,8 @@ class MultiAgentButtonsEnv:
                     completed_options.append('by')
                 if (row, col) == self.env_settings['goal_location']:
                     completed_options.append('g')
+                if row >= 7:
+                    completed_options.append('a1down')  # agent 1 has gone down
                 if s[i] == self.env_settings['initial_states'][i]:
                     completed_options.append('w1')
 
@@ -584,14 +639,21 @@ class MultiAgentButtonsEnv:
                     completed_options.append('bg')
                 if (row, col) == self.env_settings['red_button']:
                     completed_options.append('a2br')
+                if (row, col) == self.env_settings['purple_button']:
+                    completed_options.append('a2bp')
                 if s[i] == self.env_settings['initial_states'][i]:
                     completed_options.append('w2')
 
             elif i == agent3:
                 if (row, col) == self.env_settings['red_button']:
                     completed_options.append('a3br')
+                if (row, col) == self.env_settings['purple_button']:
+                    completed_options.append('a3bp')
                 if s[i] == self.env_settings['initial_states'][i]:
                     completed_options.append('w3')
+
+        if self.verbose:
+            print(f"Completed options: {completed_options}")
 
         return completed_options
 
@@ -613,7 +675,8 @@ class MultiAgentButtonsEnv:
         """
         # Convert the Truth values of which buttons have been pushed to an int
         meta_state = int(
-            '{}{}{}'.format(int(self.red_button_pushed), int(self.green_button_pushed), int(self.yellow_button_pushed)),
+            '{}{}{}{}'.format(int(self.purple_button_pushed), int(self.red_button_pushed),
+                              int(self.green_button_pushed), int(self.yellow_button_pushed)),
             2)
 
         # # if the task has been failed, return 8
@@ -621,6 +684,8 @@ class MultiAgentButtonsEnv:
         #     meta_state = 8
 
         # meta_state = self.u
+        if self.verbose:
+            print(f"Agent {agent_id}'s meta state: {meta_state}")
 
         return meta_state
 
@@ -628,10 +693,11 @@ class MultiAgentButtonsEnv:
         """
         Return the number of meta states for the agent specified by agent_id.
         """
-        return int(8)  # how many different combinations of button presses are there
+        num_meta_states = 2 ** 4  # 4 buttons
+        return num_meta_states  # how many different combinations of button presses are there
 
     ################## STRATEGY-RELATED METHODS ######################################
-    def get_strategy_mdp_label(self, s, s_next, u):
+    def get_strategy_mdp_label(self, s, s_next, u, verbose=False):
         """
         Get the mdp label resulting from transitioning from state s to state s_next.
 
@@ -672,6 +738,8 @@ class MultiAgentButtonsEnv:
                     l.append('by1')
                 else:
                     l.append('by')
+                    if self.verbose:
+                        print('Yellow button pressed')
         if u == 1:
             if self.nonmarkovian:
                 if not ((row2, col2) in self.yellow_tiles) and (row1, col1) == self.env_settings['yellow_button']:
@@ -679,6 +747,8 @@ class MultiAgentButtonsEnv:
             else:
                 if not ((row3, col3) in self.green_tiles) and (row2, col2) == self.env_settings['green_button']:
                     l.append('bg')
+                    if self.verbose:
+                        print('Green button pressed')
         if u == 2:
             if self.nonmarkovian:
                 if not ((row3, col3) in self.green_tiles) and (row2, col2) == self.env_settings['green_button']:
@@ -689,7 +759,21 @@ class MultiAgentButtonsEnv:
                         and ((row2_last, col2_last) == self.env_settings['red_button']) \
                         and ((row3_last, col3_last) == self.env_settings['red_button']):
                     l.append('br')
+                    if self.verbose:
+                        print('Red button pressed')
         if u == 3:
+            if self.nonmarkovian:
+                if not ((row3, col3) in self.green_tiles) and (row2, col2) == self.env_settings['green_button']:
+                    l.append('bg')
+            else:
+                if ((row2, col2) == self.env_settings['purple_button']) and (
+                        (row3, col3) == self.env_settings['purple_button']) \
+                        and ((row2_last, col2_last) == self.env_settings['purple_button']) \
+                        and ((row3_last, col3_last) == self.env_settings['purple_button']):
+                    l.append('br')
+                    if self.verbose:
+                        print('Purple button pressed')
+        if u == 4:
             if self.nonmarkovian:
                 if ((row2, col2) == self.env_settings['red_button']) and (
                         (row3, col3) == self.env_settings['red_button']) \
@@ -700,10 +784,14 @@ class MultiAgentButtonsEnv:
                 # Check if agent 1 has reached the goal
                 if (row1, col1) == self.env_settings['goal_location']:
                     l.append('g')
-        if u == 4 and self.nonmarkovian:
+                    if self.verbose:
+                        print('Goal reached')
+        if u == 5 and self.nonmarkovian:
             # Check if agent 1 has reached the goal
             if (row1, col1) == self.env_settings['goal_location']:
                 l.append('g')
+                if self.verbose:
+                    print('Goal reached')
 
         return l
 
@@ -727,19 +815,25 @@ class MultiAgentButtonsEnv:
         # will have to perform a different option, we make also this second option available to the agent
         if agent_id == 0:
             if rm_state == 0:
-                available_options.append('by')
+                available_options.append('by')  # Agent 1 can press the yellow button
             elif rm_state == 1 or rm_state == 2:
-                available_options.append('g')
-        elif agent_id == 1:
+                available_options.append('a1down')  # Agent 1 will have to go down across the red area
+            elif rm_state == 3:
+                available_options.append('g')  # Agent 1 has the option to go to the goal
+        elif agent_id == 1:  # Agent 2
             if rm_state == 0 or rm_state == 1:
-                available_options.append('bg')
+                available_options.append('bg')  # Agent 2 can press the green button
             elif rm_state == 2:
                 available_options.append('a2br')
-                # available_options.append('br')
+            elif rm_state == 3:
+                available_options.append('a2bp')
         else:
             if rm_state == 0 or rm_state == 1:
                 available_options.append('a3br')
-                # available_options.append('br')
+            elif rm_state == 2:
+                available_options.append('a3br')
+            elif rm_state == 3:
+                available_options.append('a3bp')
 
         if len(available_options) == 1:
             return available_options[0]
@@ -757,25 +851,30 @@ class MultiAgentButtonsEnv:
         s : int
             Index of the current state
         """
-        display = np.zeros((self.Nr, self.Nc))
+        display = np.zeros((self.Nr, self.Nc))  # zeros correspond to empty cells
 
-        # Display the locations of the walls
+        # Display the locations of the walls, represented by -1
         for loc in self.env_settings['walls']:
             display[loc] = -1
 
+        # Display the locations of the buttons, represented by 9
         display[self.env_settings['red_button']] = 9
+        display[self.env_settings['purple_button']] = 9
         display[self.env_settings['green_button']] = 9
         display[self.env_settings['yellow_button']] = 9
         display[self.env_settings['goal_location']] = 9
 
+        # Display the locations of the red tiles, represented by 8
         for loc in self.red_tiles:
+            display[loc] = 8
+        for loc in self.purple_tiles:
             display[loc] = 8
         for loc in self.green_tiles:
             display[loc] = 8
         for loc in self.yellow_tiles:
             display[loc] = 8
 
-        # Display the agents
+        # Display the agents, represented by 1, 2, 3
         for i in range(self.num_agents):
             row, col = self.get_state_description(s[i])
             display[row, col] = i + 1
@@ -783,33 +882,35 @@ class MultiAgentButtonsEnv:
         print(display)
 
 
-def play():
+def play(verbose=False):
     """to play the buttons game"""
     n = 3  # num agents
     base_file_dir = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
 
-    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'team_buttons_rm.txt')
-    # / Users / fan / Library / CloudStorage / OneDrive - TheUniversityofNottingham / Research_Projects / SynthesisingRMs_MARL / code / neary_et_al_code / experiments / buttons / team_buttons_rm.txt
+    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'new__team_buttons_rm.txt')
+    # / Users / fan / Library / CloudStorage / OneDrive - TheUniversityofNottingham / Research_Projects / SynthesisingRMs_MARL / code / neary_et_al_code / experiments / buttons / new__team_buttons_rm.txt
 
     # Set the environment settings for the experiment
-    env_settings = dict()
-    env_settings['Nr'] = 10
-    env_settings['Nc'] = 10
-    env_settings['initial_states'] = [0, 5, 8]
+    env_settings = dict()  # Create a dictionary to store the grid environment settings
+    env_settings['Nr'] = 10  # number of rows
+    env_settings['Nc'] = 10  # number of columns
+    env_settings['initial_states'] = [0, 5, 8]  # initial states of the agents
     env_settings['walls'] = [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3),
                              (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9),
-                             (0, 7), (1, 7), (2, 7), (3, 7), (4, 7)]
-    env_settings['goal_location'] = (8, 9)
-    env_settings['yellow_button'] = (0, 2)
-    env_settings['green_button'] = (5, 6)
-    env_settings['red_button'] = (6, 9)
+                             (0, 7), (1, 7), (2, 7), (3, 7), (4, 7)]  # locations of the walls
+    env_settings['goal_location'] = (8, 9)  # location of the goal
+    env_settings['yellow_button'] = (0, 2)  # location of the yellow button
+    env_settings['green_button'] = (5, 6)  # location of the green button
+    env_settings['red_button'] = (6, 9)  # location of the red button
+    env_settings['purple_button'] = (6, 7)  # location of the purple button
     env_settings['yellow_tiles'] = [(2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6)]
     env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
-    env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
+    env_settings['red_tiles'] = [(2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2)]
+    env_settings['purple_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 1.0
+    env_settings['p'] = 1.0  # probability of moving in the intended direction
 
-    game = MultiAgentButtonsEnv(rm_string, n, env_settings)
+    game = NewMultiAgentButtonsEnv(rm_string, n, env_settings, verbose=verbose)
 
     # User inputs
     str_to_action = {"w": Actions.up.value, "d": Actions.right.value, "s": Actions.down.value, "a": Actions.left.value,
@@ -854,4 +955,4 @@ def play():
 
 # This code allow to play a game (for debugging purposes)
 if __name__ == '__main__':
-    play()
+    play(verbose=True)

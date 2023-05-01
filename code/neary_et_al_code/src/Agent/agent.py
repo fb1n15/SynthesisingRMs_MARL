@@ -4,6 +4,7 @@ import numpy as np
 import random, time, os
 import matplotlib.pyplot as plt
 
+
 class Agent:
     """
     Class meant to represent an individual RM-based learning agent.
@@ -16,6 +17,7 @@ class Agent:
     state when starting a new episode by calling self.initialize_world() and 
     self.initialize_reward_machine().
     """
+
     def __init__(self, rm_file, s_i, num_states, actions, agent_id, counterfactual_training=True):
         """
         Initialize agent object.
@@ -30,6 +32,8 @@ class Agent:
             List of actions available to the agent.
         agent_id : int
             Index of this agent.
+        counterfactual_training : bool
+            Whether or not to use counterfactual training. (training with RM???)
         """
         self.rm_file = rm_file
         self.agent_id = agent_id
@@ -42,7 +46,7 @@ class Agent:
         self.rm = SparseRewardMachine(self.rm_file)
         self.u = self.rm.get_initial_state()
         self.local_event_set = self.rm.get_events()
-        
+
         self.q = np.zeros([num_states, len(self.rm.U), len(self.actions)])
         self.total_local_reward = 0
         self.is_task_complete = 0
@@ -61,7 +65,7 @@ class Agent:
         self.is_task_complete = 0
 
     def is_local_event_available(self, label):
-        if label: # Only try accessing the first event in label if it exists
+        if label:  # Only try accessing the first event in label if it exists
             event = label[0]
             return self.rm.is_event_available(self.u, event)
         else:
@@ -82,14 +86,14 @@ class Agent:
         T = learning_params.T
 
         if self.is_task_complete:
-            return self.s, 4 # stay put when task is over
+            return self.s, 4  # stay put when task is over
 
         if random.random() < epsilon:
             a = random.choice(self.actions)
             a_selected = a
         else:
             pr_sum = np.sum(np.exp(self.q[self.s, self.u, :] * T))
-            pr = np.exp(self.q[self.s, self.u, :] * T)/pr_sum # pr[a] is probability of taking action a
+            pr = np.exp(self.q[self.s, self.u, :] * T) / pr_sum  # pr[a] is probability of taking action a
 
             # If any q-values are so large that the softmax function returns infinity,
             # make the corresponding actions equally likely
@@ -101,17 +105,17 @@ class Agent:
             pr_select = np.zeros(len(self.actions) + 1)
             pr_select[0] = 0
             for i in range(len(self.actions)):
-                pr_select[i+1] = pr_select[i] + pr[i]
+                pr_select[i + 1] = pr_select[i] + pr[i]
 
             randn = random.random()
             for a in self.actions:
-                if randn >= pr_select[a] and randn <= pr_select[a+1]:
+                if randn >= pr_select[a] and randn <= pr_select[a + 1]:
                     a_selected = a
                     break
 
             # best_actions = np.where(self.q[self.s, self.u, :] == np.max(self.q[self.s, self.u, :]))[0]
             # a_selected = random.choice(best_actions)
-        
+
         a = a_selected
 
         return self.s, a
@@ -138,11 +142,11 @@ class Agent:
         # Keep track of the RM location at the start of the 
         u_start = self.u
 
-        for event in label: # there really should only be one event in the label provided to an individual agent
+        for event in label:  # there really should only be one event in the label provided to an individual agent
             # Update the agent's RM
             u2 = self.rm.get_next_state(self.u, event)
             self.u = u2
-        
+
         self.total_local_reward += reward
 
         if update_q_function == True:
@@ -180,4 +184,4 @@ class Agent:
         gamma = learning_params.gamma
 
         # Bellman update
-        self.q[s][u][a] = (1-alpha)*self.q[s][u][a] + alpha*(reward + gamma*np.amax(self.q[s_new][u_new]))
+        self.q[s][u][a] = (1 - alpha) * self.q[s][u][a] + alpha * (reward + gamma * np.amax(self.q[s_new][u_new]))

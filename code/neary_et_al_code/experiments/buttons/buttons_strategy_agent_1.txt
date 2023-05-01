@@ -2,4 +2,4 @@
 (0, 1, 'by', 0) # Yellow button is pressed
 (1, 2, 'br', 0) # Red button is pressed
 (2, 3, 'g', 1) # Goal state is reached
-(3, 3, 'True', 0) # state 3 is an absorbing state
+(3, 3, 'True', 0) # state 3 is an absorbing state (an absorbing state is a state in which the system remains forever once it is entered. )

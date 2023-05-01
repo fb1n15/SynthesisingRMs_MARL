@@ -3,6 +3,7 @@ import numpy as np
 from enum import Enum
 
 import sys
+
 sys.path.append('../')
 sys.path.append('../../')
 from reward_machines.sparse_reward_machine import SparseRewardMachine
@@ -10,12 +11,15 @@ from reward_machines.sparse_reward_machine import SparseRewardMachine
 """
 Enum with the actions that the agent can execute
 """
+
+
 class Actions(Enum):
-    up    = 0 # move up
-    right = 1 # move right
-    down  = 2 # move down
-    left  = 3 # move left
-    none  = 4 # none 
+    up = 0  # move up
+    right = 1  # move right
+    down = 2  # move down
+    left = 3  # move left
+    none = 4  # none
+
 
 class ButtonsEnv:
 
@@ -43,7 +47,7 @@ class ButtonsEnv:
         self.reward_machine = SparseRewardMachine(rm_file)
 
         self.u = self.reward_machine.get_initial_state()
-        self.last_action = -1 # Initialize last action to garbage value
+        self.last_action = -1  # Initialize last action to garbage value
 
         self.yellow_button_pushed = False
         self.green_button_pushed = False
@@ -61,9 +65,9 @@ class ButtonsEnv:
 
         initial_states = self.env_settings['initial_states']
 
-        self.s_i = initial_states[self.agent_id-1]
+        self.s_i = initial_states[self.agent_id - 1]
         self.objects = {}
-        self.objects[self.env_settings['goal_location']] = "g" # goal location
+        self.objects[self.env_settings['goal_location']] = "g"  # goal location
         self.objects[self.env_settings['yellow_button']] = 'yb'
         self.objects[self.env_settings['green_button']] = 'gb'
         self.objects[self.env_settings['red_button']] = 'rb'
@@ -77,26 +81,27 @@ class ButtonsEnv:
 
         self.actions = [Actions.up.value, Actions.right.value, Actions.left.value, Actions.down.value,
                         Actions.none.value]
-        
+
         # Define forbidden transitions corresponding to map edges
         self.forbidden_transitions = set()
-        
+
         wall_locations = self.env_settings['walls']
 
         for row in range(self.Nr):
-            self.forbidden_transitions.add((row, 0, Actions.left)) # If in left-most column, can't move left.
-            self.forbidden_transitions.add((row, self.Nc - 1, Actions.right)) # If in right-most column, can't move right.
+            self.forbidden_transitions.add((row, 0, Actions.left))  # If in left-most column, can't move left.
+            self.forbidden_transitions.add(
+                (row, self.Nc - 1, Actions.right))  # If in right-most column, can't move right.
         for col in range(self.Nc):
-            self.forbidden_transitions.add((0, col, Actions.up)) # If in top row, can't move up
-            self.forbidden_transitions.add((self.Nr - 1, col, Actions.down)) # If in bottom row, can't move down
+            self.forbidden_transitions.add((0, col, Actions.up))  # If in top row, can't move up
+            self.forbidden_transitions.add((self.Nr - 1, col, Actions.down))  # If in bottom row, can't move down
 
         # Restrict agent from having the option of moving "into" a wall
         for i in range(len(wall_locations)):
             (row, col) = wall_locations[i]
             self.forbidden_transitions.add((row, col + 1, Actions.left))
-            self.forbidden_transitions.add((row, col-1, Actions.right))
-            self.forbidden_transitions.add((row+1, col, Actions.up))
-            self.forbidden_transitions.add((row-1, col, Actions.down))
+            self.forbidden_transitions.add((row, col - 1, Actions.right))
+            self.forbidden_transitions.add((row + 1, col, Actions.up))
+            self.forbidden_transitions.add((row - 1, col, Actions.down))
 
     def environment_step(self, s, a):
         """
@@ -118,7 +123,7 @@ class ButtonsEnv:
         s_next : int
             Index of next state.
         """
-        s_next, last_action = self.get_next_state(s,a)
+        s_next, last_action = self.get_next_state(s, a)
         self.last_action = last_action
 
         l = self.get_mdp_label(s, s_next, self.u)
@@ -142,7 +147,7 @@ class ButtonsEnv:
 
         l = []
 
-        thresh = 0.3 #0.3
+        thresh = 0.3  # 0.3
 
         if self.agent_id == 1:
             if u == 0 or (u == 1 and self.nonmarkovian):
@@ -161,13 +166,13 @@ class ButtonsEnv:
             if u == 0:
                 if np.random.random() <= thresh:
                     l.append('by')
-            if u == 1 and (row,col) == self.env_settings['green_button']:
+            if u == 1 and (row, col) == self.env_settings['green_button']:
                 l.append('bg')
             if not self.strategy_rm:
-                if u == 2 and (row,col) == self.env_settings['red_button']:
+                if u == 2 and (row, col) == self.env_settings['red_button']:
                     l.append('a2br')
                 if u == 3:
-                    if not((row,col) == self.env_settings['red_button']):
+                    if not ((row, col) == self.env_settings['red_button']):
                         l.append('a2lr')
                     elif np.random.random() <= thresh:
                         l.append('br')
@@ -180,10 +185,10 @@ class ButtonsEnv:
                 if np.random.random() <= thresh:
                     l.append('bg')
             if not self.strategy_rm:
-                if u == 1 and (row,col) == self.env_settings['red_button']:
+                if u == 1 and (row, col) == self.env_settings['red_button']:
                     l.append('a3br')
                 if u == 2:
-                    if not((row,col) == self.env_settings['red_button']):
+                    if not ((row, col) == self.env_settings['red_button']):
                         l.append('a3lr')
                     elif np.random.random() <= thresh:
                         l.append('br')
@@ -213,7 +218,7 @@ class ButtonsEnv:
         last_action :int
             Last action taken by agent due to slip proability.
         """
-        slip_p = [self.p, (1-self.p)/2, (1-self.p)/2]
+        slip_p = [self.p, (1 - self.p) / 2, (1 - self.p) / 2]
         check = random.random()
 
         row, col = self.get_state_description(s)
@@ -223,27 +228,27 @@ class ButtonsEnv:
         # down  = 2 
         # left  = 3 
 
-        if (check<=slip_p[0]) or (a == Actions.none.value):
+        if (check <= slip_p[0]) or (a == Actions.none.value):
             a_ = a
 
-        elif (check>slip_p[0]) & (check<=(slip_p[0]+slip_p[1])):
-            if a == 0: 
+        elif (check > slip_p[0]) & (check <= (slip_p[0] + slip_p[1])):
+            if a == 0:
                 a_ = 3
-            elif a == 2: 
+            elif a == 2:
                 a_ = 1
-            elif a == 3: 
+            elif a == 3:
                 a_ = 2
-            elif a == 1: 
+            elif a == 1:
                 a_ = 0
 
         else:
-            if a == 0: 
+            if a == 0:
                 a_ = 1
-            elif a == 2: 
+            elif a == 2:
                 a_ = 3
-            elif a == 3: 
+            elif a == 3:
                 a_ = 0
-            elif a == 1: 
+            elif a == 1:
                 a_ = 2
 
         action_ = Actions(a_)
@@ -353,7 +358,7 @@ class ButtonsEnv:
             Index of the current state
         """
         display = np.zeros((self.Nr, self.Nc))
-        
+
         # Display the locations of the walls
         for loc in self.env_settings['walls']:
             display[loc] = -1
@@ -372,7 +377,7 @@ class ButtonsEnv:
 
         # Display the location of the agent in the world
         row, col = self.get_state_description(s)
-        display[row,col] = self.agent_id
+        display[row, col] = self.agent_id
 
         print(display)
 
@@ -419,7 +424,7 @@ class ButtonsEnv:
 
         l = []
 
-        thresh = 0.3 #0.3
+        thresh = 0.3  # 0.3
 
         if (row, col) == self.env_settings['yellow_button']:
             l.append('by')
@@ -593,33 +598,35 @@ class ButtonsEnv:
             r = 1
         return r
 
+
 def play():
     agent_id = 2
     base_file_dir = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
     rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'buttons_rm_agent_{}.txt'.format(agent_id))
-    
+
     # Set the environment settings for the experiment
     env_settings = dict()
     env_settings['Nr'] = 10
     env_settings['Nc'] = 10
     env_settings['initial_states'] = [0, 5, 8]
-    env_settings['walls'] = [(0, 3), (1, 3), (2, 3), (3,3), (4,3), (5,3), (6,3), (7,3),
-                                (7,4), (7,5), (7,6), (7,7), (7,8), (7,9),
-                                (0,7), (1,7), (2,7), (3,7), (4,7) ]
-    env_settings['goal_location'] = (8,9)
-    env_settings['yellow_button'] = (0,2)
-    env_settings['green_button'] = (5,6)
-    env_settings['red_button'] = (6,9)
-    env_settings['yellow_tiles'] = [(2,4), (2,5), (2,6), (3,4), (3,5), (3,6)]
-    env_settings['green_tiles'] = [(2,8), (2,9), (3,8), (3,9)]
-    env_settings['red_tiles'] = [(8,5), (8,6), (8,7), (8,8), (9,5), (9,6), (9,7), (9,8)]
+    env_settings['walls'] = [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3),
+                             (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9),
+                             (0, 7), (1, 7), (2, 7), (3, 7), (4, 7)]
+    env_settings['goal_location'] = (8, 9)
+    env_settings['yellow_button'] = (0, 2)
+    env_settings['green_button'] = (5, 6)
+    env_settings['red_button'] = (6, 9)
+    env_settings['yellow_tiles'] = [(2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6)]
+    env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
+    env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
     env_settings['p'] = 0.99
 
     game = ButtonsEnv(rm_string, agent_id, env_settings)
 
     # User inputs
-    str_to_action = {"w":Actions.up.value,"d":Actions.right.value,"s":Actions.down.value,"a":Actions.left.value,"x":Actions.none.value}
+    str_to_action = {"w": Actions.up.value, "d": Actions.right.value, "s": Actions.down.value, "a": Actions.left.value,
+                     "x": Actions.none.value}
 
     s = game.get_initial_state()
 
@@ -636,7 +643,7 @@ def play():
         # Executing action
         if a in str_to_action:
             r, l, s = game.environment_step(s, str_to_action[a])
-        
+
             print("---------------------")
             print("Next States: ", s)
             print("Label: ", l)
@@ -645,13 +652,14 @@ def play():
             print("failed task: ", failed_task_flag)
             print("---------------------")
 
-            if game.reward_machine.is_terminal_state(game.u): # Game Over
-                    break 
-            
+            if game.reward_machine.is_terminal_state(game.u):  # Game Over
+                break
+
         else:
             print("Forbidden action")
     game.show(s)
-    
+
+
 # This code allow to play a game (for debugging purposes)
 if __name__ == '__main__':
     play()

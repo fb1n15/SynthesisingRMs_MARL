@@ -1,21 +1,22 @@
-import numpy as np
-import random, time
+import time
 
-from tester.tester import Tester
-from Agent.agent import Agent
-from Environments.coop_buttons.buttons_env import ButtonsEnv
-from Environments.coop_buttons.multi_agent_buttons_env import MultiAgentButtonsEnv
-from Environments.rendezvous.gridworld_env import GridWorldEnv
-from Environments.rendezvous.multi_agent_gridworld_env import MultiAgentGridWorldEnv
-from Environments.officeworld.officeworld_env import OfficeWorldEnv
-from Environments.officeworld.multi_agent_officeworld_env import MultiAgentOfficeWorldEnv
 import matplotlib.pyplot as plt
+import numpy as np
+
+from src.Agent.agent import Agent
+from src.Environments.coop_buttons.buttons_env import ButtonsEnv
+from src.Environments.coop_buttons.multi_agent_buttons_env import MultiAgentButtonsEnv
+from src.Environments.officeworld.multi_agent_officeworld_env import MultiAgentOfficeWorldEnv
+from src.Environments.officeworld.officeworld_env import OfficeWorldEnv
+from src.Environments.rendezvous.gridworld_env import GridWorldEnv
+from src.Environments.rendezvous.multi_agent_gridworld_env import MultiAgentGridWorldEnv
+
 
 def run_qlearning_task(epsilon,
-                        tester,
-                        agent_list,
-                        nonmarkovian,
-                        show_print=True):
+                       tester,
+                       agent_list,
+                       nonmarkovian,
+                       show_print=True):
     """
     This code runs one q-learning episode. q-functions, and accumulated reward values of agents
     are updated accordingly. If the appropriate number of steps have elapsed, this function will
@@ -23,6 +24,7 @@ def run_qlearning_task(epsilon,
 
     Parameters
     ----------
+    nonmarkovian: whether the game is markovian?
     epsilon : float
         Numerical value in (0,1) representing likelihood of choosing a random action.
     tester : Tester object
@@ -61,20 +63,24 @@ def run_qlearning_task(epsilon,
         for i in range(num_agents):
             training_environments.append(OfficeWorldEnv(agent_list[i].rm_file, i + 1, tester.env_settings))
 
+    # Run the training episode, updating the Q-tables and reward values
+    # For each task, train the agents for at most num_steps
     for t in range(num_steps):
         # Update step count
         tester.add_step()
 
-        for i in range(num_agents):
-            # Perform a q-learning step.
-            if not(agent_list[i].is_task_complete):
+        for i in range(num_agents):  # train each agent
+            # If the agent is not done with its task, take a step
+            if not agent_list[i].is_task_complete:  # the episode ends when the task is completed
                 current_u = agent_list[i].u
                 s, a = agent_list[i].get_next_action(epsilon, learning_params)
-                r, l, s_new = training_environments[i].environment_step(s,a)
+                # take a step
+                r, l, s_new = training_environments[i].environment_step(s, a)
                 # a = training_environments[i].get_last_action() # due to MDP slip
+                # update the Q-table?
                 agent_list[i].update_agent(s_new, a, r, l, learning_params)
 
-                if agent_list[i].counterfactual_training:
+                if agent_list[i].counterfactual_training:  # training with Reward Machines?
                     for u in agent_list[i].rm.U:
                         if not (u == current_u) and not (u in agent_list[i].rm.T):
                             l = training_environments[i].get_mdp_label(s, s_new, u)
@@ -113,11 +119,11 @@ def run_qlearning_task(epsilon,
 
             # Run a test of the performance of the agents
             testing_reward, trajectory, testing_steps = run_multi_agent_qlearning_test(agent_list_copy,
-                                                                                        tester,
-                                                                                        learning_params,
-                                                                                        testing_params,
-                                                                                        nonmarkovian=nonmarkovian,
-                                                                                        show_print=show_print)
+                                                                                       tester,
+                                                                                       learning_params,
+                                                                                       testing_params,
+                                                                                       nonmarkovian=nonmarkovian,
+                                                                                       show_print=show_print)
             # Save the testing reward
             if 0 not in tester.results.keys():
                 tester.results[0] = {}
@@ -149,14 +155,14 @@ def run_qlearning_task(epsilon,
             # Keep track of the steps taken
             if len(tester.steps) == 0 or tester.steps[-1] < step:
                 tester.steps.append(step)
-        
+
         # If the agents has completed its task, reset it to its initial state.
-        #if all(agent.is_task_complete for agent in agent_list):
+        # if all(agent.is_task_complete for agent in agent_list):
         for i in range(num_agents):
             if agent_list[i].is_task_complete:
                 agent_list[i].reset_state()
                 agent_list[i].initialize_reward_machine()
-            
+
             # Make sure we've run at least the minimum number of training steps before breaking the loop
             if tester.stop_task(t):
                 break
@@ -165,12 +171,13 @@ def run_qlearning_task(epsilon,
         if tester.stop_learning():
             break
 
+
 def run_multi_agent_qlearning_test(agent_list,
-                                    tester,
-                                    learning_params,
-                                    testing_params,
-                                    nonmarkovian=False,
-                                    show_print=True):
+                                   tester,
+                                   learning_params,
+                                   testing_params,
+                                   nonmarkovian=False,
+                                   show_print=True):
     """
     Run a test of the q-learning with reward machine method with the current q-function. 
 
@@ -185,7 +192,7 @@ def run_multi_agent_qlearning_test(agent_list,
 
     Ouputs
     ------
-    testing_reard : float
+    testing_reward : float
         Reward achieved by agent during this test episode.
     trajectory : list
         List of dictionaries containing information on current step of test.
@@ -198,7 +205,7 @@ def run_multi_agent_qlearning_test(agent_list,
         testing_env = MultiAgentGridWorldEnv(tester.rm_test_file, num_agents, tester.env_settings,
                                              strategy_rm=tester.strategy_rm)
     if tester.experiment == 'search_and_rescue':
-        target_region = np.random.choice([0,1,2,3,4])
+        target_region = np.random.choice([0, 1, 2, 3, 4])
         testing_env = SearchAndRescueEnv(tester.rm_test_file, target_region, tester.env_settings)
     if tester.experiment == 'buttons':
         testing_env = MultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
@@ -210,16 +217,16 @@ def run_multi_agent_qlearning_test(agent_list,
         agent_list[i].reset_state()
         agent_list[i].initialize_reward_machine()
 
-    s_team = np.full(num_agents, -1, dtype=int)
-    for i in range(num_agents):
-        s_team[i] = agent_list[i].s
-    a_team = np.full(num_agents, -1, dtype=int)
-    u_team = np.full(num_agents, -1, dtype=int)
+    s_team = np.full(num_agents, -1, dtype=int)  # a list of states of all agents
+    a_team = np.full(num_agents, -1, dtype=int)  # a list of actions of all agents
+    u_team = np.full(num_agents, -1, dtype=int)  # a list of reward machine states of all agents
+    # Initialize the states (environement states and RM states) of all agents
     for i in range(num_agents):
         u_team[i] = agent_list[i].u
-    testing_reward = 0
+        s_team[i] = agent_list[i].s
+    testing_reward = 0  # total reward for this episode
 
-    trajectory = []
+    trajectory = []  # list of dictionaries containing information on current step of test
 
     step = 0
 
@@ -240,12 +247,13 @@ def run_multi_agent_qlearning_test(agent_list,
 
         testing_reward = testing_reward + r
 
+
         projected_l_dict = {}
         for i in range(num_agents):
             # Agent i's projected label is the intersection of l with its local event set
             projected_l_dict[i] = list(set(agent_list[i].local_event_set) & set(l))
             # Check if the event causes a transition from the agent's current RM state
-            if not(agent_list[i].is_local_event_available(projected_l_dict[i])):
+            if not (agent_list[i].is_local_event_available(projected_l_dict[i])):
                 projected_l_dict[i] = []
 
         for i in range(num_agents):
@@ -253,29 +261,35 @@ def run_multi_agent_qlearning_test(agent_list,
             if projected_l_dict[i]:
                 for event in projected_l_dict[i]:
                     for j in range(num_agents):
-                        if (event in set(agent_list[j].local_event_set)) and (not (projected_l_dict[j] == projected_l_dict[i])):
+                        if (event in set(agent_list[j].local_event_set)) and (
+                                not (projected_l_dict[j] == projected_l_dict[i])):
                             projected_l_dict[i] = []
 
             # update the agent's internal representation
             # a = testing_env.get_last_action(i)
-            agent_list[i].update_agent(s_team_next[i], a_team[i], r, projected_l_dict[i], learning_params, update_q_function=False)
+            agent_list[i].update_agent(s_team_next[i], a_team[i], r, projected_l_dict[i], learning_params,
+                                       update_q_function=False)
 
         if all(agent.is_task_complete for agent in agent_list) or ('d' in l and tester.experiment == 'officeworld'):
             break
 
     if show_print:
-        print('Reward of {} achieved in {} steps. Current step: {} of {}'.format(testing_reward, step, tester.current_step, tester.total_steps))
+        print('Reward of {} achieved in {} steps. Current step: {} of {}'.format(testing_reward, step,
+                                                                                 tester.current_step,
+                                                                                 tester.total_steps))
 
     return testing_reward, trajectory, step
 
+
 def run_multi_agent_experiment(tester,
-                            num_agents,
-                            num_times,
-                            nonmarkovian=False,
-                            counterfactual_training=True,
-                            show_print=True):
+                               num_agents,
+                               num_times,
+                               nonmarkovian=False,
+                               counterfactual_training=True,
+                               show_print=True):
     """
     Run the entire q-learning with reward machines experiment a number of times specified by num_times.
+    Plot the results of the experiment at the end.
 
     Inputs
     ------
@@ -287,7 +301,7 @@ def run_multi_agent_experiment(tester,
     num_times : int
         Number of times to run the entire experiment (restarting training from scratch).
     nonmarkovian : bool
-        Flag indicating whether or not to use nonmarkovian design in buttons task.
+        Flag indicating whether to use nonmarkovian design in buttons task.
     counterfactual_training : bool
         Flag indicating whether or not the agents are trained using counterfactual samples.
     show_print : bool
@@ -319,7 +333,7 @@ def run_multi_agent_experiment(tester,
             num_states = testing_env.num_states
 
         # Create the a list of agents for this experiment
-        agent_list = [] 
+        agent_list = []
         for i in range(num_agents):
             actions = testing_env.get_actions(i)
             s_i = testing_env.get_initial_state(i)
@@ -332,23 +346,25 @@ def run_multi_agent_experiment(tester,
         # Task loop
         epsilon = learning_params.initial_epsilon
 
+        # train the agents until stopping learning
         while not tester.stop_learning():
             num_episodes += 1
 
             # epsilon = epsilon*0.99
-
+            # run Q-learning for each agent
             run_qlearning_task(epsilon,
-                                tester,
-                                agent_list,
-                                nonmarkovian,
-                                show_print=show_print)
+                               tester,
+                               agent_list,
+                               nonmarkovian,
+                               show_print=show_print)
 
         # Backing up the results
-        print('Finished iteration ',t)
+        print('Finished iteration ', t)
 
     tester.agent_list = agent_list
 
     plot_multi_agent_results(tester, num_agents)
+
 
 def plot_multi_agent_results(tester, num_agents):
     """
@@ -406,23 +422,23 @@ def plot_multi_agent_results(tester, num_agents):
 
         for step in plot_dict.keys():
             if len(current_step) < 10:
-                current_25.append(np.percentile(np.array(plot_dict[step]),25))
-                current_50.append(np.percentile(np.array(plot_dict[step]),50))
-                current_75.append(np.percentile(np.array(plot_dict[step]),75))
-                current_step.append(sum(plot_dict[step])/len(plot_dict[step]))
+                current_25.append(np.percentile(np.array(plot_dict[step]), 25))
+                current_50.append(np.percentile(np.array(plot_dict[step]), 50))
+                current_75.append(np.percentile(np.array(plot_dict[step]), 75))
+                current_step.append(sum(plot_dict[step]) / len(plot_dict[step]))
             else:
                 current_step.pop(0)
                 current_25.pop(0)
                 current_50.pop(0)
                 current_75.pop(0)
-                current_25.append(np.percentile(np.array(plot_dict[step]),25))
-                current_50.append(np.percentile(np.array(plot_dict[step]),50))
-                current_75.append(np.percentile(np.array(plot_dict[step]),75))
-                current_step.append(sum(plot_dict[step])/len(plot_dict[step]))
+                current_25.append(np.percentile(np.array(plot_dict[step]), 25))
+                current_50.append(np.percentile(np.array(plot_dict[step]), 50))
+                current_75.append(np.percentile(np.array(plot_dict[step]), 75))
+                current_step.append(sum(plot_dict[step]) / len(plot_dict[step]))
 
-            prc_25.append(sum(current_25)/len(current_25))
-            prc_50.append(sum(current_50)/len(current_50))
-            prc_75.append(sum(current_75)/len(current_75))
+            prc_25.append(sum(current_25) / len(current_25))
+            prc_50.append(sum(current_50) / len(current_50))
+            prc_75.append(sum(current_75) / len(current_75))
             steps.append(step)
 
         plt.plot(steps, prc_25, alpha=0)
@@ -436,4 +452,3 @@ def plot_multi_agent_results(tester, num_agents):
         plt.locator_params(axis='x', nbins=5)
 
     plt.show()
-
