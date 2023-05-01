@@ -1,0 +1,11 @@
+digraph witness0 {
+ 0 [label="0",shape=ellipse]
+ 1 [label="1",shape=ellipse]
+ 2 [label="2",shape=ellipse]
+ 3 [label="3",shape=ellipse]
+ 4 [label="4",shape=ellipse]
+    0 -> 1[label="<press_yellow;nil;nil>"]
+    1 -> 2[label="<nil;press_green;nil>"]
+    2 -> 3[label="<nil;press_red;press_red>"]
+    3 -> 4[label="<to_goal;nil;nil>"]
+}
