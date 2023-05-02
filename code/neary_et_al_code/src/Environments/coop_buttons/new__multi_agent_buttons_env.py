@@ -225,8 +225,18 @@ class NewMultiAgentButtonsEnv:
         """
         if self.verbose:
             print("Current Environment State: ", s)
-            print("Agent ID: ", agent_id)
-            print("Action: ", a)
+            print("Agent ID: ", agent_id+1)
+            if a == 0:
+                action = 'up'
+            elif a == 1:
+                action = 'right'
+            elif a == 2:
+                action = 'down'
+            elif a == 3:
+                action = "left"
+            else:
+                action = 'stay'
+                print(f"Action: {action}")
         slip_p = [self.p, (1 - self.p) / 2, (1 - self.p) / 2]
         check = random.random()
 
@@ -674,6 +684,8 @@ class NewMultiAgentButtonsEnv:
             Index of the meta-state.
         """
         # Convert the Truth values of which buttons have been pushed to an int
+        # convert the binary number to a decimal number
+        # so the meta state represent which buttons are pressed
         meta_state = int(
             '{}{}{}{}'.format(int(self.purple_button_pushed), int(self.red_button_pushed),
                               int(self.green_button_pushed), int(self.yellow_button_pushed)),
@@ -944,7 +956,7 @@ def play(verbose=False):
         print("Next States: ", s)
         print("Label: ", l)
         print("Reward: ", r)
-        print("RM state: ", game.u)
+        print("Witness state: ", game.u)
         print('Meta state: ', game.get_meta_state(0))
         print("---------------------")
 
