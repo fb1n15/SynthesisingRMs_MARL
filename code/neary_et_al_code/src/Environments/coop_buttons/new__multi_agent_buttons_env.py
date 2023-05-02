@@ -509,13 +509,54 @@ class NewMultiAgentButtonsEnv:
                 if not ((row3, col3) == self.env_settings['red_button']):
                     l.append('a3lr')
             else:
-                # Check if agent 1 has reached the goal
-                if (row1, col1) == self.env_settings['goal_location']:
-                    l.append('g')
-        if u == 7 and self.nonmarkovian:
-            # Check if agent 1 has reached the goal
-            if (row1, col1) == self.env_settings['goal_location']:
-                l.append('g')
+                # Check if agent 1 has gone down
+                if row1 >= 7:
+                    l.append('a1down')
+        if u == 7:
+            if self.nonmarkovian:
+                if not ((row3, col3) in self.green_tiles) and (row2, col2) == self.env_settings['green_button']:
+                    l.append('bg')
+            else:
+                if (row2, col2) == self.env_settings['purple_button']:
+                    l.append('a2bp')
+                if (row3, col3) == self.env_settings['purple_button']:
+                    l.append('a3bp')
+        if u == 8:
+            if self.nonmarkovian:
+                if (row2, col2) == self.env_settings['purple_button']:
+                    l.append('a2bp')
+                if (row3, col3) == self.env_settings['purple_button']:
+                    l.append('a3bp')
+            else:
+                if not ((row2, col2) == self.env_settings['purple_button']):
+                    l.append('a2lp')
+                if (row3, col3) == self.env_settings['purple_button']:
+                    l.append('a3bp')
+        if u == 9:
+            if self.nonmarkovian:
+                if not ((row2, col2) == self.env_settings['purple_button']):
+                    l.append('a2lp')
+                if (row3, col3) == self.env_settings['purple_button']:
+                    l.append('a3bp')
+            else:
+                if (row2, col2) == self.env_settings['purple_button']:
+                    l.append('a2bp')
+                if not ((row3, col3) == self.env_settings['purple_button']):
+                    l.append('a3lp')
+        if u == 10:
+            if self.nonmarkovian:
+                if (row2, col2) == self.env_settings['purple_button']:
+                    l.append('a2bp')
+                if not ((row3, col3) == self.env_settings['purple_button']):
+                    l.append('a3lp')
+            else:
+                if ((row2, col2) == self.env_settings['purple_button']) and (
+                        (row3, col3) == self.env_settings['purple_button']):
+                    l.append('bp')
+                if not ((row2, col2) == self.env_settings['purple_button']):
+                    l.append('a2lp')
+                if not ((row3, col3) == self.env_settings['purple_button']):
+                    l.append('a3lp')
         if self.verbose:
             print("Event (mdp) Label: ", l)
         return l
@@ -697,7 +738,8 @@ class NewMultiAgentButtonsEnv:
 
         # meta_state = self.u
         if self.verbose:
-            print(f"Agent {agent_id}'s meta state: {meta_state}")
+            print(f"Buttons state: purple: {self.purple_button_pushed}, red: {self.red_button_pushed}, "
+                  f"green: {self.green_button_pushed}, yellow: {self.yellow_button_pushed}")
 
         return meta_state
 
@@ -956,7 +998,7 @@ def play(verbose=False):
         print("Next States: ", s)
         print("Label: ", l)
         print("Reward: ", r)
-        print("Witness state: ", game.u)
+        print("Reward Machine state: ", game.u)
         print('Meta state: ', game.get_meta_state(0))
         print("---------------------")
 
