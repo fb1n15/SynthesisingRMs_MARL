@@ -1,0 +1,10 @@
+0 # initial state 
+(0, 1, 'by', 0) # Yellow button is pressed
+(1, 2, 'bg', 0) # Green button is pressed
+(2, 3, 'a2br', 0) # Agent 2 moves onto red button
+(3, 2, 'a2lr', 0) # Agent 2 leaves red button prematurely
+(3, 4, 'br', 0) # Red button is successfully activated
+(4, 5, 'a2bp', 0) # Agent 2 moves onto purple button
+(5, 4, 'a2lp', 0) # Agent 2 leaves purple button prematurely
+(5, 6, 'bp', 1) # Purple button is successfully activated
+(6, 6, 'True', 0) # State 6 is an absorbing state

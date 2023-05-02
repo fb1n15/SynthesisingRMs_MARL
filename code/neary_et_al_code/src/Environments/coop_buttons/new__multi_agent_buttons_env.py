@@ -58,6 +58,7 @@ class NewMultiAgentButtonsEnv:
         self.strategy_rm = strategy_rm
         self.nonmarkovian = nonmarkovian
         self.verbose = verbose  # Whether or not to print out debug statements
+        print(f"verbose: {self.verbose}")
 
     def _load_map(self):
         """
@@ -287,7 +288,7 @@ class NewMultiAgentButtonsEnv:
         # If the appropriate button hasn't yet been pressed, don't allow the agent into the colored region
         if agent_id == 0:
             # cannot go to purple region unless the purple button has been pressed
-            if self.u != 11:
+            if self.u != 10:
                 if (row, col) in self.purple_tiles:
                     s_next = s
             # cannot go to red region unless the red button has been pressed
@@ -501,19 +502,6 @@ class NewMultiAgentButtonsEnv:
                     l.append('a3lr')
         if u == 6:
             if self.nonmarkovian:
-                if ((row2, col2) == self.env_settings['red_button']) and (
-                        (row3, col3) == self.env_settings['red_button']):
-                    l.append('br')
-                if not ((row2, col2) == self.env_settings['red_button']):
-                    l.append('a2lr')
-                if not ((row3, col3) == self.env_settings['red_button']):
-                    l.append('a3lr')
-            else:
-                # Check if agent 1 has gone down
-                if row1 >= 7:
-                    l.append('a1down')
-        if u == 7:
-            if self.nonmarkovian:
                 if not ((row3, col3) in self.green_tiles) and (row2, col2) == self.env_settings['green_button']:
                     l.append('bg')
             else:
@@ -521,7 +509,7 @@ class NewMultiAgentButtonsEnv:
                     l.append('a2bp')
                 if (row3, col3) == self.env_settings['purple_button']:
                     l.append('a3bp')
-        if u == 8:
+        if u == 7:
             if self.nonmarkovian:
                 if (row2, col2) == self.env_settings['purple_button']:
                     l.append('a2bp')
@@ -532,7 +520,7 @@ class NewMultiAgentButtonsEnv:
                     l.append('a2lp')
                 if (row3, col3) == self.env_settings['purple_button']:
                     l.append('a3bp')
-        if u == 9:
+        if u == 8:
             if self.nonmarkovian:
                 if not ((row2, col2) == self.env_settings['purple_button']):
                     l.append('a2lp')
@@ -543,7 +531,7 @@ class NewMultiAgentButtonsEnv:
                     l.append('a2bp')
                 if not ((row3, col3) == self.env_settings['purple_button']):
                     l.append('a3lp')
-        if u == 10:
+        if u == 9:
             if self.nonmarkovian:
                 if (row2, col2) == self.env_settings['purple_button']:
                     l.append('a2bp')
@@ -557,6 +545,9 @@ class NewMultiAgentButtonsEnv:
                     l.append('a2lp')
                 if not ((row3, col3) == self.env_settings['purple_button']):
                     l.append('a3lp')
+        if u == 10:
+            if (row1, col1) == self.env_settings['goal_location']:
+                l.append('g')
         if self.verbose:
             print("Event (mdp) Label: ", l)
         return l
@@ -586,7 +577,6 @@ class NewMultiAgentButtonsEnv:
         if agent_id == agent1:
             options_list.append('w1')  # wait for agent 1??
             options_list.append('by')  # press yellow button
-            options_list.append("a1down")
             options_list.append('g')  # go to goal
 
         if agent_id == agent2:
@@ -618,7 +608,6 @@ class NewMultiAgentButtonsEnv:
             avail_options.append('w1')
             avail_options.append('by')
             if self.red_button_pushed:
-                avail_options.append('a1down')
                 if self.purple_button_pushed:
                     avail_options.append('g')
         if agent_id == agent2:
@@ -680,8 +669,6 @@ class NewMultiAgentButtonsEnv:
                     completed_options.append('by')
                 if (row, col) == self.env_settings['goal_location']:
                     completed_options.append('g')
-                if row >= 7:
-                    completed_options.append('a1down')  # agent 1 has gone down
                 if s[i] == self.env_settings['initial_states'][i]:
                     completed_options.append('w1')
 
@@ -870,8 +857,6 @@ class NewMultiAgentButtonsEnv:
         if agent_id == 0:
             if rm_state == 0:
                 available_options.append('by')  # Agent 1 can press the yellow button
-            elif rm_state == 1 or rm_state == 2:
-                available_options.append('a1down')  # Agent 1 will have to go down across the red area
             elif rm_state == 3:
                 available_options.append('g')  # Agent 1 has the option to go to the goal
         elif agent_id == 1:  # Agent 2

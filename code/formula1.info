@@ -2,6 +2,7 @@
   Agent Environment
     goal_reached=false
     green_pressed=false
+    purple_pressed=false
     red_pressed=false
     yellow_pressed=false
   Agent Agent0
@@ -15,6 +16,7 @@
   Agent Environment
     goal_reached=false
     green_pressed=false
+    purple_pressed=false
     red_pressed=false
     yellow_pressed=true
   Agent Agent0
@@ -28,6 +30,7 @@
   Agent Environment
     goal_reached=false
     green_pressed=true
+    purple_pressed=false
     red_pressed=false
     yellow_pressed=true
   Agent Agent0
@@ -41,6 +44,7 @@
   Agent Environment
     goal_reached=false
     green_pressed=true
+    purple_pressed=false
     red_pressed=true
     yellow_pressed=true
   Agent Agent0
@@ -52,8 +56,23 @@
 
 -- State 4 --
   Agent Environment
+    goal_reached=false
+    green_pressed=true
+    purple_pressed=true
+    red_pressed=true
+    yellow_pressed=true
+  Agent Agent0
+    agent_dummy=false
+  Agent Agent1
+    agent_dummy=false
+  Agent Agent2
+    agent_dummy=false
+
+-- State 5 --
+  Agent Environment
     goal_reached=true
     green_pressed=true
+    purple_pressed=true
     red_pressed=true
     yellow_pressed=true
   Agent Agent0

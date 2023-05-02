@@ -10,15 +10,14 @@
 (5, 3, 'a3lr', 0) # Agent 3 left red button
 (5, 4, 'a2lr', 0) # Agent 2 left red button
 (5, 6, 'br', 0) # Red button has been pressed
-(6, 7, 'a1down', 0)  # Agent 1 moved down (through the red area)
-(7, 8, 'a2bp', 0)  # Agent 2 on purple button
-(8, 7, 'a2lp', 0)  # Agent 2 left purple button
+(6, 7, 'a2bp', 0)  # Agent 2 on purple button
+(7, 8, 'a2lp', 0)  # Agent 2 left purple button
+(6, 8, 'a3bp', 0)  # Agent 3 on purple button
+(8, 6, 'a3lp', 0)  # Agent 3 left purple button
 (7, 9, 'a3bp', 0)  # Agent 3 on purple button
 (9, 7, 'a3lp', 0)  # Agent 3 left purple button
-(8, 10, 'a3bp', 0)  # Agent 3 on purple button
-(10, 8, 'a3lp', 0)  # Agent 3 left purple button
-(9, 10, 'a2bp', 0)  # Agent 2 on purple button
-(10, 9, 'a2lp', 0)  # Agent 2 left purple button
-(10, 11, 'bp', 0)  # Purple button has been pressed
-(11, 12, 'g', 1) # Agent 1 reaches goal destination
-(12, 12, 'True', 0) # u12 is a terminating state
+(8, 9, 'a2bp', 0)  # Agent 2 on purple button
+(9, 8, 'a2lp', 0)  # Agent 2 left purple button
+(9, 10, 'bp', 0)  # Purple button has been pressed
+(10, 11, 'g', 1) # Agent 1 reaches goal destination
+(11, 11, 'True', 0) # u11 is a terminating state
