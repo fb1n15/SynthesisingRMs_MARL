@@ -926,8 +926,8 @@ def play(verbose=False):
     n = 3  # num agents
     base_file_dir = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
 
-    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'new__team_buttons_rm.txt')
-    # / Users / fan / Library / CloudStorage / OneDrive - TheUniversityofNottingham / Research_Projects / SynthesisingRMs_MARL / code / neary_et_al_code / experiments / buttons / new__team_buttons_rm.txt
+    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'new_team_buttons_rm.txt')
+    # / Users / fan / Library / CloudStorage / OneDrive - TheUniversityofNottingham / Research_Projects / SynthesisingRMs_MARL / code / neary_et_al_code / experiments / buttons / new_team_buttons_rm.txt
 
     # Set the environment settings for the experiment
     env_settings = dict()  # Create a dictionary to store the grid environment settings
