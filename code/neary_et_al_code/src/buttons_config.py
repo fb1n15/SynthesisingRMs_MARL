@@ -42,7 +42,7 @@ def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False)
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'nonmarkovian_team_buttons_rm.txt')
     else:
         if strategy_rm:
-            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_strategy_rm.txt')
+            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_automatic_rm.txt')
         else:
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_rm.txt')
 
