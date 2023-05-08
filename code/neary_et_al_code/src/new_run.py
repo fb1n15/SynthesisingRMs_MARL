@@ -68,7 +68,7 @@ if __name__ == "__main__":
         run_iql_experiment(tester, num_agents, num_times, show_print=True)
 
     if experiment == 'buttons':  # coop buttons experiment
-        from buttons_config import buttons_config
+        from new_buttons_config import buttons_config
         from experiments.new_dqprm import run_multi_agent_experiment
 
         num_agents = 3  # Num agents must be 3 for this example
