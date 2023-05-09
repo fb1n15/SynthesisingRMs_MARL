@@ -202,10 +202,20 @@ class ButtonsEnv:
                         l.append('a3lr')
                     elif np.random.random() <= thresh:
                         l.append('br')
+                if u == 3 and (row, col) == self.env_settings['purple_button']:  # agent 3 is on the purple button
+                    l.append('a3bp')
+                if u == 4:
+                    if not ((row, col) == self.env_settings['purple_button']):  # agent 3 leaves the purple button
+                        l.append('a3lp')
+                    elif np.random.random() <= thresh:  # simulate the purple button press
+                        l.append('bp')
             else:
                 if u == 1 and (row, col) == self.env_settings['red_button'] \
                         and (prev_row, prev_col) == self.env_settings['red_button'] and np.random.random() <= thresh:
-                    l.append('br')
+                    l.append('br')  # simulated button press (red button)
+                if u == 2 and (row, col) == self.env_settings['purple_button'] \
+                        and (prev_row, prev_col) == self.env_settings['purple_button'] and np.random.random() <= thresh:
+                    l.append('bp')  # simulated button press (purple button)
 
         return l
 

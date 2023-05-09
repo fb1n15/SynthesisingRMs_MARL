@@ -4,7 +4,7 @@ from tester.learning_params import LearningParameters
 import os
 
 
-def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False):
+def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False):
     """
     Function setting the experiment parameters and environment.
 
@@ -100,6 +100,6 @@ def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False)
 
     tester.strategy_rm = strategy_rm
 
-    tester.experiment = 'buttons'
+    tester.experiment = 'new_buttons'
 
     return tester
