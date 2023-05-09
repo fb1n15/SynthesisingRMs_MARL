@@ -28,10 +28,10 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
         else:
             if i == 0 and nonmarkovian:
                 local_rm_string = os.path.join(base_file_path, 'experiments', 'buttons',
-                                               'nonmarkovian_buttons_strategy_agent_{}.txt'.format(i + 1))
+                                               'nonmarkovian_new_buttons_automatic_rm_agent_{}.txt'.format(i + 1))
             else:
                 local_rm_string = os.path.join(base_file_path, 'experiments', 'buttons',
-                                               'buttons_strategy_agent_{}.txt'.format(i + 1))
+                                               'new_buttons_automatic_rm_agent_{}.txt'.format(i + 1))
         local_rm_files.append(local_rm_string)
 
     if nonmarkovian:
@@ -42,9 +42,9 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'nonmarkovian_team_buttons_rm.txt')
     else:
         if strategy_rm:
-            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_automatic_rm.txt')
+            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'new_team_buttons_automatic_rm.txt')
         else:
-            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_rm.txt')
+            joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'new_team_buttons_rm.txt')
 
     step_unit = 1000
 
@@ -80,8 +80,8 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
 
     # Set the environment settings for the experiment
     env_settings = dict()
-    env_settings['Nr'] = 10
-    env_settings['Nc'] = 10
+    env_settings['Nr'] = 10  # number of rows
+    env_settings['Nc'] = 10  # number of columns
     env_settings['initial_states'] = [0, 5, 8]
     env_settings['walls'] = [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3),
                              (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9),
@@ -90,9 +90,11 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
     env_settings['yellow_button'] = (0, 2)
     env_settings['green_button'] = (5, 6)
     env_settings['red_button'] = (6, 9)
+    env_settings['purple_button'] = (6, 7)
     env_settings['yellow_tiles'] = [(2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6)]
     env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
-    env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
+    env_settings['red_tiles'] = [(2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2)]
+    env_settings['purple_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
     env_settings['p'] = 0.98
 
