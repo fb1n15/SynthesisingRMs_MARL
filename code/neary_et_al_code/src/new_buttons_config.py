@@ -4,7 +4,7 @@ from tester.learning_params import LearningParameters
 import os
 
 
-def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False):
+def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False, verbose=False):
     """
     Function setting the experiment parameters and environment.
 
@@ -96,12 +96,18 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
     env_settings['red_tiles'] = [(2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2)]
     env_settings['purple_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 0.98
+    env_settings['p'] = 0.98  # probability of moving in the desired direction why not 1.0?
 
     tester.env_settings = env_settings
 
     tester.strategy_rm = strategy_rm
 
     tester.experiment = 'new_buttons'
+
+    if verbose:
+        print('Experiment: {}'.format(tester.experiment))
+        print('Number of agents: {}'.format(tester.num_agents))
+        print('Number of trials: {}'.format(tester.num_times))
+        print('Strategy RM: {}'.format(tester.strategy_rm))
 
     return tester

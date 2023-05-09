@@ -5,7 +5,9 @@ import numpy as np
 
 from src.Agent.agent import Agent
 from src.Environments.coop_buttons.buttons_env import ButtonsEnv
+from src.Environments.coop_buttons.new__buttons_env import NewButtonsEnv
 from src.Environments.coop_buttons.multi_agent_buttons_env import MultiAgentButtonsEnv
+from src.Environments.coop_buttons.new__multi_agent_buttons_env import NewMultiAgentButtonsEnv
 from src.Environments.officeworld.multi_agent_officeworld_env import MultiAgentOfficeWorldEnv
 from src.Environments.officeworld.officeworld_env import OfficeWorldEnv
 from src.Environments.rendezvous.gridworld_env import GridWorldEnv
@@ -53,6 +55,12 @@ def run_qlearning_task(epsilon,
             training_environments.append(GridWorldEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
                                                       strategy_rm=tester.strategy_rm))
     if tester.experiment == 'buttons':
+        training_environments = []
+        for i in range(num_agents):
+            training_environments.append(ButtonsEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
+                                                    strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian))
+
+    if tester.experiment == 'new_buttons':
         training_environments = []
         for i in range(num_agents):
             training_environments.append(ButtonsEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
@@ -308,6 +316,7 @@ def run_multi_agent_experiment(tester,
         Flag indicating whether or not to output text to the terminal.
     """
 
+    global testing_env
     learning_params = tester.learning_params
     for t in range(num_times):
         # Reseting default step values
@@ -326,6 +335,10 @@ def run_multi_agent_experiment(tester,
             num_states = testing_env.num_states
         if tester.experiment == 'buttons':
             testing_env = MultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
+                                               strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
+            num_states = testing_env.num_states
+        if tester.experiment == 'new_buttons':
+            testing_env = NewMultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
                                                strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
             num_states = testing_env.num_states
         if tester.experiment == 'officeworld':

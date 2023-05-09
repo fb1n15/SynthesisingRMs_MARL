@@ -1,12 +1,14 @@
 import random, math, os
+from typing import List
+
 import numpy as np
 from enum import Enum
 
 import sys
+from reward_machines.sparse_reward_machine import SparseRewardMachine
 
 sys.path.append('../')
 sys.path.append('../../')
-from reward_machines.sparse_reward_machine import SparseRewardMachine
 
 """
 Enum with the actions that the agent can execute
@@ -21,9 +23,9 @@ class Actions(Enum):
     none = 4  # none
 
 
-class ButtonsEnv:
+class NewButtonsEnv:
 
-    def __init__(self, rm_file, agent_id, env_settings, strategy_rm=False, nonmarkovian=False):
+    def __init__(self, rm_file, agent_id, env_settings, strategy_rm=False, nonmarkovian=False, verbose=False):
         """
         Initialize environment.
 
@@ -52,9 +54,11 @@ class ButtonsEnv:
         self.yellow_button_pushed = False
         self.green_button_pushed = False
         self.red_button_pushed = False
+        self.purple_button_pushed = False
 
         self.strategy_rm = strategy_rm
         self.nonmarkovian = nonmarkovian
+        self.verbose = verbose  # True if we want to print the state of the environment at each step
 
     def _load_map(self):
         """
@@ -66,14 +70,13 @@ class ButtonsEnv:
         initial_states = self.env_settings['initial_states']
 
         self.s_i = initial_states[self.agent_id - 1]
-        self.objects = {}
-        self.objects[self.env_settings['goal_location']] = "g"  # goal location
-        self.objects[self.env_settings['yellow_button']] = 'yb'
-        self.objects[self.env_settings['green_button']] = 'gb'
-        self.objects[self.env_settings['red_button']] = 'rb'
+        self.objects = {self.env_settings['goal_location']: "g", self.env_settings['yellow_button']: 'yb',
+                        self.env_settings['green_button']: 'gb', self.env_settings['red_button']: 'rb',
+                        self.env_settings['purple_button']: 'pb'}
         self.yellow_tiles = self.env_settings['yellow_tiles']
         self.green_tiles = self.env_settings['green_tiles']
         self.red_tiles = self.env_settings['red_tiles']
+        self.purple_tiles = self.env_settings['purple_tiles']
 
         self.p = self.env_settings['p']
 
@@ -159,7 +162,10 @@ class ButtonsEnv:
             if (u == 1 and not self.nonmarkovian) or (u == 2 and self.nonmarkovian):
                 if np.random.random() <= thresh:
                     l.append('br')  # simulated button press (red button)
-            if u == 2 or (u == 3 and self.nonmarkovian):
+            if (u == 2 and not self.nonmarkovian) or (u == 2 and self.nonmarkovian):
+                if np.random.random() <= thresh:
+                    l.append('bp')  # simulated button press (red button)
+            if u == 3 or (u == 4 and self.nonmarkovian):
                 if (row, col) == self.env_settings['goal_location']:
                     l.append('g')
         elif self.agent_id == 2:
@@ -292,6 +298,9 @@ class ButtonsEnv:
             if self.u == 1:
                 if (row, col) in self.red_tiles:
                     s_next = s
+            if self.u == 2:
+                if (row, col) in self.purple_tiles:
+                    s_next = s
             if self.u == 2 and self.nonmarkovian:
                 if (row, col) in self.red_tiles:
                     s_next = s
@@ -345,7 +354,7 @@ class ButtonsEnv:
         row = np.floor_divide(s, self.Nr)
         col = np.mod(s, self.Nc)
 
-        return (row, col)
+        return row, col
 
     def get_actions(self):
         """
@@ -384,6 +393,7 @@ class ButtonsEnv:
             display[loc] = -1
 
         display[self.env_settings['red_button']] = 9
+        display[self.env_settings['purple_button']] = 9
         display[self.env_settings['green_button']] = 9
         display[self.env_settings['yellow_button']] = 9
         display[self.env_settings['goal_location']] = 9
@@ -393,6 +403,8 @@ class ButtonsEnv:
         for loc in self.green_tiles:
             display[loc] = 8
         for loc in self.yellow_tiles:
+            display[loc] = 8
+        for loc in self.purple_tiles:
             display[loc] = 8
 
         # Display the location of the agent in the world
@@ -455,13 +467,18 @@ class ButtonsEnv:
         elif (row, col) == self.env_settings['red_button'] and \
                 (next_row, next_col) == self.env_settings['red_button'] and np.random.random() <= thresh:
             l.append('br')
+        elif (row, col) == self.env_settings['purple_button'] and \
+                (next_row, next_col) == self.env_settings['purple_button'] and np.random.random() <= thresh:
+            l.append('bp')  # simulate that the purple button is pressed
 
-        if np.random.random() <= thresh and option == 'bg':
-            l.append('by')
-        elif np.random.random() <= thresh and option == 'a3br':
-            l.append('bg')
-        elif np.random.random() <= thresh and option == 'g':
-            l.append('br')
+        # what is option?
+        if option:
+            if np.random.random() <= thresh and option == 'bg':
+                l.append('by')
+            elif np.random.random() <= thresh and option == 'a3br':
+                l.append('bg')
+            elif np.random.random() <= thresh and option == 'g':
+                l.append('br')
 
         return l
 
@@ -568,7 +585,7 @@ class ButtonsEnv:
         s_next, last_action = self.get_strategy_next_state(s, a)
         self.last_action = last_action
 
-        l = self.get_strategy_label(s, s_next, option)
+        l: List[str] = self.get_strategy_label(s, s_next, option)
         r = 0
 
         if option == 'bg' and 'by' in l and not self.yellow_button_pushed:
@@ -620,29 +637,31 @@ class ButtonsEnv:
 
 
 def play():
-    agent_id = 2
+    agent_id = int(input('Enter agent id: '))
     base_file_dir = os.path.abspath(os.path.join(os.getcwd(), '../../..'))
-    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'buttons_rm_agent_{}.txt'.format(agent_id))
+    rm_string = os.path.join(base_file_dir, 'experiments', 'buttons', 'new_buttons_rm_agent_{}.txt'.format(agent_id))
 
     # Set the environment settings for the experiment
-    env_settings = dict()
-    env_settings['Nr'] = 10
-    env_settings['Nc'] = 10
-    env_settings['initial_states'] = [0, 5, 8]
+    env_settings = dict()  # Create a dictionary to store the grid environment settings
+    env_settings['Nr'] = 10  # number of rows
+    env_settings['Nc'] = 10  # number of columns
+    env_settings['initial_states'] = [0, 5, 8]  # initial states of the agents
     env_settings['walls'] = [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3),
                              (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9),
-                             (0, 7), (1, 7), (2, 7), (3, 7), (4, 7)]
-    env_settings['goal_location'] = (8, 9)
-    env_settings['yellow_button'] = (0, 2)
-    env_settings['green_button'] = (5, 6)
-    env_settings['red_button'] = (6, 9)
+                             (0, 7), (1, 7), (2, 7), (3, 7), (4, 7)]  # locations of the walls
+    env_settings['goal_location'] = (8, 9)  # location of the goal
+    env_settings['yellow_button'] = (0, 2)  # location of the yellow button
+    env_settings['green_button'] = (5, 6)  # location of the green button
+    env_settings['red_button'] = (6, 9)  # location of the red button
+    env_settings['purple_button'] = (6, 7)  # location of the purple button
     env_settings['yellow_tiles'] = [(2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6)]
     env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
-    env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
+    env_settings['red_tiles'] = [(2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2)]
+    env_settings['purple_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 0.99
+    env_settings['p'] = 1.0  # probability of moving in the intended direction
 
-    game = ButtonsEnv(rm_string, agent_id, env_settings)
+    game = NewButtonsEnv(rm_string, agent_id, env_settings)
 
     # User inputs
     str_to_action = {"w": Actions.up.value, "d": Actions.right.value, "s": Actions.down.value, "a": Actions.left.value,
