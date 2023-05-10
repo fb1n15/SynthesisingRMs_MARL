@@ -63,7 +63,7 @@ def run_qlearning_task(epsilon,
     if tester.experiment == 'new_buttons':
         training_environments = []
         for i in range(num_agents):
-            training_environments.append(ButtonsEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
+            training_environments.append(NewButtonsEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
                                                     strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian))
 
     if tester.experiment == 'officeworld':

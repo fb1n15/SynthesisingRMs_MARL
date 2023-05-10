@@ -46,7 +46,6 @@ def new_buttons_config(num_times, num_agents, step_unit=1000, strategy_rm=False,
         else:
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'new_team_buttons_rm.txt')
 
-
     # configuration of testing params
     testing_params = TestingParameters()
     testing_params.test = True
@@ -95,7 +94,8 @@ def new_buttons_config(num_times, num_agents, step_unit=1000, strategy_rm=False,
     env_settings['red_tiles'] = [(2, 0), (2, 1), (2, 2), (3, 0), (3, 1), (3, 2)]
     env_settings['purple_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 0.98  # probability of moving in the desired direction why not 1.0?
+    # env_settings['p'] = 0.98  # probability of moving in the desired direction why not 1.0?
+    env_settings['p'] = 1  # probability of moving in the desired direction why not 1.0?
 
     tester.env_settings = env_settings
 
