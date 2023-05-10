@@ -4,7 +4,7 @@ from tester.learning_params import LearningParameters
 import os
 
 
-def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False):
+def buttons_config(num_times, num_agents, step_unit=1000, strategy_rm=False, nonmarkovian=False):
     """
     Function setting the experiment parameters and environment.
 
@@ -46,7 +46,6 @@ def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False)
         else:
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'team_buttons_rm.txt')
 
-    step_unit = 1000
 
     # configuration of testing params
     testing_params = TestingParameters()
@@ -94,7 +93,7 @@ def buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False)
     env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
     env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 0.98
+    env_settings['p'] = 1
 
     tester.env_settings = env_settings
 

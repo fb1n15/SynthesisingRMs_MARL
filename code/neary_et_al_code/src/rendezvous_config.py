@@ -74,7 +74,7 @@ def rendezvous_config(num_times, num_agents, strategy_rm=False, invariant_experi
     env_settings['initial_states'] = [0, 3, 20, 8, 90, 40, 70, 49, 96, 69]
     env_settings['rendezvous_loc'] = (3,4)
     env_settings['goal_locations'] = [(9,7), (7,9), (2,9), (9,9), (0,9), (7,0), (4,0), (5,0), (6,9), (8,0)]
-    env_settings['p'] = 0.98
+    env_settings['p'] = 1
 
     tester.env_settings = env_settings
 

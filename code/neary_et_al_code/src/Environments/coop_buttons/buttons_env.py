@@ -620,7 +620,7 @@ def play():
     env_settings['green_tiles'] = [(2, 8), (2, 9), (3, 8), (3, 9)]
     env_settings['red_tiles'] = [(8, 5), (8, 6), (8, 7), (8, 8), (9, 5), (9, 6), (9, 7), (9, 8)]
 
-    env_settings['p'] = 0.99
+    env_settings['p'] = 1
 
     game = ButtonsEnv(rm_string, agent_id, env_settings)
 

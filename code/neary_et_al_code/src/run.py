@@ -4,8 +4,8 @@ import os
 
 if __name__ == "__main__":
 
-    num_times = 1  # Number of separate trials to run the algorithm for
-    # num_times = 10  # Number of separate trials to run the algorithm for
+    # num_times = 1  # Number of separate trials to run the algorithm for
+    num_times = 10  # Number of separate trials to run the algorithm for
 
     num_agents = 10  # This will be automatically set to 3 for buttons experiment (max 10)
 
@@ -83,7 +83,8 @@ if __name__ == "__main__":
         from experiments.dqprm import run_multi_agent_experiment
 
         num_agents = 3  # Num agents must be 3 for this example
-        tester = buttons_config(num_times, num_agents)  # Get test object from config script
+        step_unit = 200
+        tester = buttons_config(num_times, num_agents, step_unit=step_unit)  # Get test object from config script
         run_multi_agent_experiment(tester, num_agents, num_times, show_print=True)
 
     if experiment == 'ihrl_buttons':
