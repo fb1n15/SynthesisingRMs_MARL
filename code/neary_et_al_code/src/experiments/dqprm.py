@@ -218,6 +218,9 @@ def run_multi_agent_qlearning_test(agent_list,
     if tester.experiment == 'buttons':
         testing_env = MultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
                                            strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
+    if tester.experiment == 'new_buttons':
+        testing_env = NewMultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
+                                           strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
     if tester.experiment == 'officeworld':
         testing_env = MultiAgentOfficeWorldEnv(tester.rm_test_file, tester.env_settings)
 
@@ -282,6 +285,7 @@ def run_multi_agent_qlearning_test(agent_list,
             break
 
     if show_print:
+        print('Test agents in the multi-agent environment')
         print('Reward of {} achieved in {} steps. Current step: {} of {}'.format(testing_reward, step,
                                                                                  tester.current_step,
                                                                                  tester.total_steps))

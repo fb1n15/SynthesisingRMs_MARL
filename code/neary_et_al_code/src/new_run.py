@@ -15,7 +15,8 @@ if __name__ == "__main__":
     # experiment = 'strategy_invariant_rendezvous'
     # experiment = 'iql_rendezvous'
 
-    experiment = 'buttons'
+    # experiment = 'buttons'
+    experiment = 'new_buttons'  # new coop buttons env. with purple button
     # experiment = 'ihrl_buttons'
     # experiment = 'strategy_buttons'
     # experiment = 'counterfactual_buttons'
@@ -23,6 +24,15 @@ if __name__ == "__main__":
 
     # experiment = 'officeworld'
     # experiment = 'strategy_officeworld'
+
+    if experiment == 'new_buttons':
+        from new_buttons_config import new_buttons_config
+        from experiments.dqprm import run_multi_agent_experiment
+
+        num_agents = 3  # Num agents must be 3 for this example
+        verbose = True
+        tester = new_buttons_config(num_times, num_agents, verbose=verbose)  # Get test object from config script
+        run_multi_agent_experiment(tester, num_agents, num_times, show_print=True)
 
     if experiment == 'rendezvous':
         from rendezvous_config import rendezvous_config
@@ -67,9 +77,9 @@ if __name__ == "__main__":
         tester = rendezvous_config(num_times, num_agents)
         run_iql_experiment(tester, num_agents, num_times, show_print=True)
 
-    if experiment == 'buttons':  # coop buttons experiment
-        from new_buttons_config import buttons_config
-        from experiments.new_dqprm import run_multi_agent_experiment
+    if experiment == 'buttons':
+        from buttons_config import buttons_config
+        from experiments.dqprm import run_multi_agent_experiment
 
         num_agents = 3  # Num agents must be 3 for this example
         tester = buttons_config(num_times, num_agents)  # Get test object from config script

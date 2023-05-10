@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # experiment = 'iql_rendezvous'
 
     # experiment = 'buttons'
-    experiment = 'new_buttons'  # new coop buttons env. with purple button
+    experiment = 'buttons'  # new coop buttons env. with purple button
     # experiment = 'ihrl_buttons'
     # experiment = 'strategy_buttons'
     # experiment = 'counterfactual_buttons'
