@@ -4,7 +4,7 @@ from tester.learning_params import LearningParameters
 import os
 
 
-def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=False, verbose=False):
+def new_buttons_config(num_times, num_agents, step_unit=1000, strategy_rm=False, nonmarkovian=False, verbose=False):
     """
     Function setting the experiment parameters and environment.
 
@@ -46,7 +46,6 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
         else:
             joint_rm_file = os.path.join(base_file_path, 'experiments', 'buttons', 'new_team_buttons_rm.txt')
 
-    step_unit = 1000  # test the agents every 1000 steps
 
     # configuration of testing params
     testing_params = TestingParameters()
@@ -67,8 +66,8 @@ def new_buttons_config(num_times, num_agents, strategy_rm=False, nonmarkovian=Fa
     # Create the tester object
     tester = Tester(learning_params, testing_params)
     tester.step_unit = step_unit
-    tester.total_steps = 25*step_unit
-    # tester.total_steps = 250 * step_unit  # 25 * step_unit (strategy experiment of around 35 seconds per iteration), 150 * step_unit (Neary RM experiment of aroung 35 seconds per iteration)
+    # tester.total_steps = 25*step_unit
+    tester.total_steps = 250 * step_unit  # 25 * step_unit (strategy experiment of around 35 seconds per iteration), 150 * step_unit (Neary RM experiment of aroung 35 seconds per iteration)
     # experiment where options are pretrained:
     tester.min_steps = 1
 
