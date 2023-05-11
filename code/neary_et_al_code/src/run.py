@@ -5,7 +5,8 @@ import os
 if __name__ == "__main__":
 
     # num_times = 1  # Number of separate trials to run the algorithm for
-    num_times = 10  # Number of separate trials to run the algorithm for
+    # num_times = 10  # Number of separate trials to run the algorithm for
+    num_times = 100  # Number of separate trials to run the algorithm for
 
     num_agents = 10  # This will be automatically set to 3 for buttons experiment (max 10)
 
@@ -16,8 +17,8 @@ if __name__ == "__main__":
     # experiment = 'strategy_invariant_rendezvous'
     # experiment = 'iql_rendezvous'
 
-    # experiment = 'buttons'
-    experiment = 'buttons'  # new coop buttons env. with purple button
+    experiment = 'buttons'  # old cooperative buttons env.
+    # experiment = 'new_buttons'  # new coop buttons env. with purple button
     # experiment = 'ihrl_buttons'
     # experiment = 'strategy_buttons'
     # experiment = 'counterfactual_buttons'
@@ -26,13 +27,24 @@ if __name__ == "__main__":
     # experiment = 'officeworld'
     # experiment = 'strategy_officeworld'
 
+    if experiment == 'buttons':
+        from buttons_config import buttons_config
+        from experiments.dqprm import run_multi_agent_experiment
+
+        num_agents = 3  # Num agents must be 3 for this example
+        step_unit = 200
+        tester = buttons_config(num_times, num_agents, step_unit=step_unit)  # Get test object from config script
+        run_multi_agent_experiment(tester, num_agents, num_times, show_print=True)
+
     if experiment == 'new_buttons':
         from new_buttons_config import new_buttons_config
         from experiments.dqprm import run_multi_agent_experiment
 
         num_agents = 3  # Num agents must be 3 for this example
+        step_unit = 200  # Test the performance after training for every step_unit steps
         verbose = True
-        tester = new_buttons_config(num_times, num_agents, verbose=verbose)  # Get test object from config script
+        # Get test object from config script
+        tester = new_buttons_config(num_times, num_agents, step_unit=step_unit, verbose=verbose)
         run_multi_agent_experiment(tester, num_agents, num_times, show_print=True)
 
     if experiment == 'rendezvous':
@@ -78,14 +90,6 @@ if __name__ == "__main__":
         tester = rendezvous_config(num_times, num_agents)
         run_iql_experiment(tester, num_agents, num_times, show_print=True)
 
-    if experiment == 'buttons':
-        from buttons_config import buttons_config
-        from experiments.dqprm import run_multi_agent_experiment
-
-        num_agents = 3  # Num agents must be 3 for this example
-        step_unit = 200
-        tester = buttons_config(num_times, num_agents, step_unit=step_unit)  # Get test object from config script
-        run_multi_agent_experiment(tester, num_agents, num_times, show_print=True)
 
     if experiment == 'ihrl_buttons':
         from buttons_config import buttons_config

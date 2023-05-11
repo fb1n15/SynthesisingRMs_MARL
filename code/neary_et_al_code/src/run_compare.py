@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def plot_testing_steps_two_results(tester_dqprm, tester_strategy, label1='DQPRM_NearyRM', label2='DQPRM_strategyRM'):
     """
     Plot the results stored in tester.results for each of the agents.
@@ -31,23 +32,23 @@ def plot_testing_steps_two_results(tester_dqprm, tester_strategy, label1='DQPRM_
 
     for step in plot_dict_dqprm.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]),75))
-            current_step.append(sum(plot_dict_dqprm[step])/len(plot_dict_dqprm[step]))
+            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]), 75))
+            current_step.append(sum(plot_dict_dqprm[step]) / len(plot_dict_dqprm[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]),75))
-            current_step.append(sum(plot_dict_dqprm[step])/len(plot_dict_dqprm[step]))
+            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]), 75))
+            current_step.append(sum(plot_dict_dqprm[step]) / len(plot_dict_dqprm[step]))
 
-        prc_25_dqprm.append(sum(current_25)/len(current_25))
-        prc_50_dqprm.append(sum(current_50)/len(current_50))
-        prc_75_dqprm.append(sum(current_75)/len(current_75))
+        prc_25_dqprm.append(sum(current_25) / len(current_25))
+        prc_50_dqprm.append(sum(current_50) / len(current_50))
+        prc_75_dqprm.append(sum(current_75) / len(current_75))
         steps_dqprm.append(step)
 
     current_step = list()
@@ -57,23 +58,23 @@ def plot_testing_steps_two_results(tester_dqprm, tester_strategy, label1='DQPRM_
 
     for step in plot_dict_strategy.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_strategy[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_strategy[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_strategy[step]),75))
-            current_step.append(sum(plot_dict_strategy[step])/len(plot_dict_strategy[step]))
+            current_25.append(np.percentile(np.array(plot_dict_strategy[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_strategy[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_strategy[step]), 75))
+            current_step.append(sum(plot_dict_strategy[step]) / len(plot_dict_strategy[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_strategy[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_strategy[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_strategy[step]),75))
-            current_step.append(sum(plot_dict_strategy[step])/len(plot_dict_strategy[step]))
+            current_25.append(np.percentile(np.array(plot_dict_strategy[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_strategy[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_strategy[step]), 75))
+            current_step.append(sum(plot_dict_strategy[step]) / len(plot_dict_strategy[step]))
 
-        prc_25_strategy.append(sum(current_25)/len(current_25))
-        prc_50_strategy.append(sum(current_50)/len(current_50))
-        prc_75_strategy.append(sum(current_75)/len(current_75))
+        prc_25_strategy.append(sum(current_25) / len(current_25))
+        prc_50_strategy.append(sum(current_50) / len(current_50))
+        prc_75_strategy.append(sum(current_75) / len(current_75))
         steps_strategy.append(step)
 
     plt.plot(steps_dqprm, prc_25_dqprm, alpha=0)
@@ -93,7 +94,7 @@ def plot_testing_steps_two_results(tester_dqprm, tester_strategy, label1='DQPRM_
     plt.xlabel('Training Steps', fontsize=15)
     plt.legend()
     plt.xscale('log')
-    #plt.locator_params(axis='x', nbins=5)
+    # plt.locator_params(axis='x', nbins=5)
 
     plt.show()
 
@@ -127,23 +128,23 @@ def plot_counterfactual_experiment(tester_baseline, tester_counterfactual, label
 
     for step in plot_dict_baseline.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_baseline[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_baseline[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_baseline[step]),75))
-            current_step.append(sum(plot_dict_baseline[step])/len(plot_dict_baseline[step]))
+            current_25.append(np.percentile(np.array(plot_dict_baseline[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_baseline[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_baseline[step]), 75))
+            current_step.append(sum(plot_dict_baseline[step]) / len(plot_dict_baseline[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_baseline[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_baseline[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_baseline[step]),75))
-            current_step.append(sum(plot_dict_baseline[step])/len(plot_dict_baseline[step]))
+            current_25.append(np.percentile(np.array(plot_dict_baseline[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_baseline[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_baseline[step]), 75))
+            current_step.append(sum(plot_dict_baseline[step]) / len(plot_dict_baseline[step]))
 
-        prc_25_baseline.append(sum(current_25)/len(current_25))
-        prc_50_baseline.append(sum(current_50)/len(current_50))
-        prc_75_baseline.append(sum(current_75)/len(current_75))
+        prc_25_baseline.append(sum(current_25) / len(current_25))
+        prc_50_baseline.append(sum(current_50) / len(current_50))
+        prc_75_baseline.append(sum(current_75) / len(current_75))
         steps_baseline.append(step)
 
     current_step = list()
@@ -153,23 +154,23 @@ def plot_counterfactual_experiment(tester_baseline, tester_counterfactual, label
 
     for step in plot_dict_counterfactual.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_counterfactual[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_counterfactual[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_counterfactual[step]),75))
-            current_step.append(sum(plot_dict_counterfactual[step])/len(plot_dict_counterfactual[step]))
+            current_25.append(np.percentile(np.array(plot_dict_counterfactual[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_counterfactual[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_counterfactual[step]), 75))
+            current_step.append(sum(plot_dict_counterfactual[step]) / len(plot_dict_counterfactual[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_counterfactual[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_counterfactual[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_counterfactual[step]),75))
-            current_step.append(sum(plot_dict_counterfactual[step])/len(plot_dict_counterfactual[step]))
+            current_25.append(np.percentile(np.array(plot_dict_counterfactual[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_counterfactual[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_counterfactual[step]), 75))
+            current_step.append(sum(plot_dict_counterfactual[step]) / len(plot_dict_counterfactual[step]))
 
-        prc_25_counterfactual.append(sum(current_25)/len(current_25))
-        prc_50_counterfactual.append(sum(current_50)/len(current_50))
-        prc_75_counterfactual.append(sum(current_75)/len(current_75))
+        prc_25_counterfactual.append(sum(current_25) / len(current_25))
+        prc_50_counterfactual.append(sum(current_50) / len(current_50))
+        prc_75_counterfactual.append(sum(current_75) / len(current_75))
         steps_counterfactual.append(step)
 
     plt.plot(steps_baseline, prc_25_baseline, alpha=0)
@@ -193,7 +194,7 @@ def plot_counterfactual_experiment(tester_baseline, tester_counterfactual, label
     plt.legend()
     if label1[0] != 'o':
         plt.xscale('log')
-    #else:
+    # else:
     #    plt.locator_params(axis='x', nbins=5)
 
     plt.show()
@@ -229,23 +230,23 @@ def plot_testing_steps_three_results(tester_dqprm, tester_strategy, tester_ihrl)
 
     for step in plot_dict_dqprm.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]),75))
-            current_step.append(sum(plot_dict_dqprm[step])/len(plot_dict_dqprm[step]))
+            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]), 75))
+            current_step.append(sum(plot_dict_dqprm[step]) / len(plot_dict_dqprm[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]),75))
-            current_step.append(sum(plot_dict_dqprm[step])/len(plot_dict_dqprm[step]))
+            current_25.append(np.percentile(np.array(plot_dict_dqprm[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_dqprm[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_dqprm[step]), 75))
+            current_step.append(sum(plot_dict_dqprm[step]) / len(plot_dict_dqprm[step]))
 
-        prc_25_dqprm.append(sum(current_25)/len(current_25))
-        prc_50_dqprm.append(sum(current_50)/len(current_50))
-        prc_75_dqprm.append(sum(current_75)/len(current_75))
+        prc_25_dqprm.append(sum(current_25) / len(current_25))
+        prc_50_dqprm.append(sum(current_50) / len(current_50))
+        prc_75_dqprm.append(sum(current_75) / len(current_75))
         steps_dqprm.append(step)
 
     current_step = list()
@@ -255,23 +256,23 @@ def plot_testing_steps_three_results(tester_dqprm, tester_strategy, tester_ihrl)
 
     for step in plot_dict_strategy.keys():
         if len(current_step) < 10:
-            current_25.append(np.percentile(np.array(plot_dict_strategy[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_strategy[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_strategy[step]),75))
-            current_step.append(sum(plot_dict_strategy[step])/len(plot_dict_strategy[step]))
+            current_25.append(np.percentile(np.array(plot_dict_strategy[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_strategy[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_strategy[step]), 75))
+            current_step.append(sum(plot_dict_strategy[step]) / len(plot_dict_strategy[step]))
         else:
             current_step.pop(0)
             current_25.pop(0)
             current_50.pop(0)
             current_75.pop(0)
-            current_25.append(np.percentile(np.array(plot_dict_strategy[step]),25))
-            current_50.append(np.percentile(np.array(plot_dict_strategy[step]),50))
-            current_75.append(np.percentile(np.array(plot_dict_strategy[step]),75))
-            current_step.append(sum(plot_dict_strategy[step])/len(plot_dict_strategy[step]))
+            current_25.append(np.percentile(np.array(plot_dict_strategy[step]), 25))
+            current_50.append(np.percentile(np.array(plot_dict_strategy[step]), 50))
+            current_75.append(np.percentile(np.array(plot_dict_strategy[step]), 75))
+            current_step.append(sum(plot_dict_strategy[step]) / len(plot_dict_strategy[step]))
 
-        prc_25_strategy.append(sum(current_25)/len(current_25))
-        prc_50_strategy.append(sum(current_50)/len(current_50))
-        prc_75_strategy.append(sum(current_75)/len(current_75))
+        prc_25_strategy.append(sum(current_25) / len(current_25))
+        prc_50_strategy.append(sum(current_50) / len(current_50))
+        prc_75_strategy.append(sum(current_75) / len(current_75))
         steps_strategy.append(step)
 
     current_step = list()
@@ -323,30 +324,30 @@ def plot_testing_steps_three_results(tester_dqprm, tester_strategy, tester_ihrl)
     plt.xlabel('Training Steps', fontsize=15)
     plt.legend()
     plt.xscale('log')
-    #plt.locator_params(axis='x', nbins=5)
+    # plt.locator_params(axis='x', nbins=5)
 
     plt.show()
 
 
 if __name__ == "__main__":
 
-    num_times = 10 # Number of separate trials to run the algorithm for
-    #experiment = 'buttons_diff_rm'
-    #experiment = 'rendezvous_diff_rm'
-    #experiment = 'buttons'
-    #experiment = 'rendezvous'
+    num_times = 10  # Number of separate trials to run the algorithm for
+    # experiment = 'buttons_diff_rm'
+    # experiment = 'rendezvous_diff_rm'
+    # experiment = 'buttons'
+    experiment = 'new_buttons'  # new cooperative buttons environment
+    # experiment = 'rendezvous'
 
-    #experiment = 'buttons_counterfactual' done
-    #experiment = 'rendezvous_counterfactual' done
-    experiment = 'officeworld_counterfactual'
+    # experiment = 'buttons_counterfactual' done
+    # experiment = 'rendezvous_counterfactual' done
+    # experiment = 'officeworld_counterfactual'
 
-    #experiment = 'qrm_buttons_counterfactual' done
-    #experiment = 'qrm_rendezvous_counterfactual' done
-    #experiment = 'qrm_officeworld_counterfactual' done
+    # experiment = 'qrm_buttons_counterfactual' done
+    # experiment = 'qrm_rendezvous_counterfactual' done
+    # experiment = 'qrm_officeworld_counterfactual' done
 
-
-    nonmarkovian = True
-    #nonmarkovian = False
+    # nonmarkovian = True
+    nonmarkovian = False
 
     if experiment == 'buttons':
         num_agents = 3
@@ -354,14 +355,17 @@ if __name__ == "__main__":
         from buttons_config import buttons_config
 
         from experiments.dqprm import run_multi_agent_experiment
-        tester_dqprm = buttons_config(num_times, num_agents) # Get test object from config script
+
+        tester_dqprm = buttons_config(num_times, num_agents)  # Get test object from config script
         run_multi_agent_experiment(tester_dqprm, num_agents, num_times, show_print=True)
 
         from experiments.run_strategy_experiment import run_strategy_experiment
+
         tester_strategy = buttons_config(num_times, num_agents, strategy_rm=True)
         run_strategy_experiment(tester_strategy, num_agents, num_times, show_print=True)
 
         from experiments.run_ihrl_experiment import run_ihrl_experiment
+
         tester_ihrl = buttons_config(num_times, num_agents)
         run_ihrl_experiment(tester_ihrl, num_agents, num_times, show_print=True)
 
@@ -373,14 +377,17 @@ if __name__ == "__main__":
         from rendezvous_config import rendezvous_config
 
         from experiments.dqprm import run_multi_agent_experiment
+
         tester_dqprm = rendezvous_config(num_times, num_agents)  # Get test object from config script
         run_multi_agent_experiment(tester_dqprm, num_agents, num_times, show_print=True)
 
         from experiments.run_strategy_experiment import run_strategy_experiment
+
         tester_strategy = rendezvous_config(num_times, num_agents, strategy_rm=True)
         run_strategy_experiment(tester_strategy, num_agents, num_times, show_print=True)
 
         from experiments.run_ihrl_experiment import run_ihrl_experiment
+
         tester_ihrl = rendezvous_config(num_times, num_agents)
         run_ihrl_experiment(tester_ihrl, num_agents, num_times, show_print=True)
 
@@ -392,7 +399,9 @@ if __name__ == "__main__":
         from buttons_config import buttons_config
 
         from experiments.dqprm import run_multi_agent_experiment
-        tester_dqprm = buttons_config(num_times, num_agents, nonmarkovian=nonmarkovian)  # Get test object from config script
+
+        tester_dqprm = buttons_config(num_times, num_agents,
+                                      nonmarkovian=nonmarkovian)  # Get test object from config script
         run_multi_agent_experiment(tester_dqprm, num_agents, num_times, show_print=True, nonmarkovian=nonmarkovian)
 
         tester_strategy = buttons_config(num_times, num_agents, strategy_rm=True, nonmarkovian=nonmarkovian)
@@ -406,6 +415,7 @@ if __name__ == "__main__":
         from rendezvous_config import rendezvous_config
 
         from experiments.dqprm import run_multi_agent_experiment
+
         tester_dqprm = rendezvous_config(num_times, num_agents)  # Get test object from config script
         run_multi_agent_experiment(tester_dqprm, num_agents, num_times, show_print=True)
 
@@ -423,7 +433,8 @@ if __name__ == "__main__":
         tester_baseline = buttons_config(num_times, num_agents, strategy_rm=True)  # Get test object from config script
         run_strategy_experiment(tester_baseline, num_agents, num_times, show_print=True)
 
-        tester_counterfactual = buttons_config(num_times, num_agents, strategy_rm=True)  # Get test object from config script
+        tester_counterfactual = buttons_config(num_times, num_agents,
+                                               strategy_rm=True)  # Get test object from config script
         run_strategy_experiment(tester_counterfactual, num_agents, num_times, counterfactual_experiment=True,
                                 show_print=True)
 
@@ -436,7 +447,8 @@ if __name__ == "__main__":
         from rendezvous_config import rendezvous_config
         from experiments.run_strategy_experiment import run_strategy_experiment
 
-        tester_baseline = rendezvous_config(num_times, num_agents, strategy_rm=True)  # Get test object from config script
+        tester_baseline = rendezvous_config(num_times, num_agents,
+                                            strategy_rm=True)  # Get test object from config script
         run_strategy_experiment(tester_baseline, num_agents, num_times, show_print=True)
 
         tester_counterfactual = rendezvous_config(num_times, num_agents,
@@ -471,7 +483,7 @@ if __name__ == "__main__":
         from experiments.dqprm import run_multi_agent_experiment
 
         tester_qrm = buttons_config(num_times, num_agents, strategy_rm=True,
-                                      nonmarkovian=nonmarkovian)  # Get test object from config script
+                                    nonmarkovian=nonmarkovian)  # Get test object from config script
         run_multi_agent_experiment(tester_qrm, num_agents, num_times, show_print=True, counterfactual_training=False,
                                    nonmarkovian=nonmarkovian)
 
