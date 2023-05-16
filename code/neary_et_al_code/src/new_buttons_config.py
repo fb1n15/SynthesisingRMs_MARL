@@ -75,6 +75,9 @@ def new_buttons_config(num_times, num_agents, step_unit=1000, strategy_rm=False,
 
     tester.rm_test_file = joint_rm_file
     tester.rm_learning_file_list = local_rm_files
+    if verbose:
+        print("tester.rm_learning_file_list: {}".format(tester.rm_learning_file_list))
+        print("tester.rm_test_file: {}".format(tester.rm_test_file))
 
     # Set the environment settings for the experiment
     env_settings = dict()

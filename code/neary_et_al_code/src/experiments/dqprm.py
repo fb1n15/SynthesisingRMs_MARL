@@ -18,6 +18,7 @@ def run_qlearning_task(epsilon,
                        tester,
                        agent_list,
                        nonmarkovian,
+                       verbose = False,
                        show_print=True):
     """
     This code runs one q-learning episode. q-functions, and accumulated reward values of agents
@@ -64,7 +65,7 @@ def run_qlearning_task(epsilon,
         training_environments = []
         for i in range(num_agents):
             training_environments.append(NewButtonsEnv(agent_list[i].rm_file, i + 1, tester.env_settings,
-                                                    strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian))
+                                                       strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian))
 
     if tester.experiment == 'officeworld':
         training_environments = []
@@ -131,6 +132,7 @@ def run_qlearning_task(epsilon,
                                                                                        learning_params,
                                                                                        testing_params,
                                                                                        nonmarkovian=nonmarkovian,
+                                                                                       verbose=verbose,
                                                                                        show_print=show_print)
             # Save the testing reward
             if 0 not in tester.results.keys():
@@ -185,6 +187,7 @@ def run_multi_agent_qlearning_test(agent_list,
                                    learning_params,
                                    testing_params,
                                    nonmarkovian=False,
+                                   verbose = False,
                                    show_print=True):
     """
     Run a test of the q-learning with reward machine method with the current q-function. 
@@ -220,7 +223,7 @@ def run_multi_agent_qlearning_test(agent_list,
                                            strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
     if tester.experiment == 'new_buttons':
         testing_env = NewMultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
-                                           strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
+                                              strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
     if tester.experiment == 'officeworld':
         testing_env = MultiAgentOfficeWorldEnv(tester.rm_test_file, tester.env_settings)
 
@@ -256,8 +259,16 @@ def run_multi_agent_qlearning_test(agent_list,
 
         r, l, s_team_next = testing_env.environment_step(s_team, a_team)
 
-        testing_reward = testing_reward + r
+        if verbose:
+            print('s_team: ', s_team)
+            print('a_team: ', a_team)
+            print('r: ', r)
+            print('l: ', l)
+            print('s_team_next: ', s_team_next)
+            print('u_team: ', u_team)
+            print('')
 
+        testing_reward = testing_reward + r
 
         projected_l_dict = {}
         for i in range(num_agents):
@@ -297,7 +308,7 @@ def run_multi_agent_experiment(tester,
                                num_agents,
                                num_times,
                                nonmarkovian=False,
-                               counterfactual_training=True,
+                               counterfactual_training=True, verbose=False,
                                show_print=True):
     """
     Run the entire q-learning with reward machines experiment a number of times specified by num_times.
@@ -343,7 +354,7 @@ def run_multi_agent_experiment(tester,
             num_states = testing_env.num_states
         if tester.experiment == 'new_buttons':
             testing_env = NewMultiAgentButtonsEnv(tester.rm_test_file, num_agents, tester.env_settings,
-                                               strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
+                                                  strategy_rm=tester.strategy_rm, nonmarkovian=nonmarkovian)
             num_states = testing_env.num_states
         if tester.experiment == 'officeworld':
             testing_env = MultiAgentOfficeWorldEnv(tester.rm_test_file, tester.env_settings)
@@ -373,6 +384,7 @@ def run_multi_agent_experiment(tester,
                                tester,
                                agent_list,
                                nonmarkovian,
+                               verbose,
                                show_print=show_print)
 
         # Backing up the results

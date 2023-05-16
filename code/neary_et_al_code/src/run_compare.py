@@ -371,6 +371,30 @@ if __name__ == "__main__":
 
         plot_testing_steps_three_results(tester_dqprm, tester_strategy, tester_ihrl)
 
+    if experiment == 'new_buttons':
+        num_agents = 3
+
+        from new_buttons_config import new_buttons_config
+
+        from experiments.dqprm import run_multi_agent_experiment
+
+        step_unit = 200
+        # Get test object from config script
+        tester_dqprm = new_buttons_config(num_times, num_agents, step_unit=step_unit)
+        run_multi_agent_experiment(tester_dqprm, num_agents, num_times, show_print=True)
+
+        from experiments.run_strategy_experiment import run_strategy_experiment
+
+        tester_strategy = new_buttons_config(num_times, num_agents, strategy_rm=True)
+        run_strategy_experiment(tester_strategy, num_agents, num_times, show_print=True)
+
+        from experiments.run_ihrl_experiment import run_ihrl_experiment
+
+        tester_ihrl = buttons_config(num_times, num_agents)
+        run_ihrl_experiment(tester_ihrl, num_agents, num_times, show_print=True)
+
+        plot_testing_steps_three_results(tester_dqprm, tester_strategy, tester_ihrl)
+
     elif experiment == 'rendezvous':
         num_agents = 10
 

@@ -811,7 +811,7 @@ class NewMultiAgentButtonsEnv:
                         (row3, col3) == self.env_settings['purple_button']) \
                         and ((row2_last, col2_last) == self.env_settings['purple_button']) \
                         and ((row3_last, col3_last) == self.env_settings['purple_button']):
-                    l.append('br')
+                    l.append('bp')
                     if self.verbose:
                         print('Purple button pressed')
         if u == 4:
@@ -822,7 +822,6 @@ class NewMultiAgentButtonsEnv:
                         and ((row3_last, col3_last) == self.env_settings['red_button']):
                     l.append('br')
             else:
-                # Check if agent 1 has reached the goal
                 if (row1, col1) == self.env_settings['goal_location']:
                     l.append('g')
                     if self.verbose:
