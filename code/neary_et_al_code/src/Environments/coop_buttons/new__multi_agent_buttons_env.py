@@ -288,13 +288,13 @@ class NewMultiAgentButtonsEnv:
         # If the appropriate button hasn't yet been pressed, don't allow the agent into the colored region
         if agent_id == 0:
             # cannot go to purple region unless the purple button has been pressed
-            if self.u != 10:
-                if (row, col) in self.purple_tiles:
-                    s_next = s
             # cannot go to red region unless the red button has been pressed
             if self.strategy_rm:
-                if (self.u == 0) or (self.u == 1) or (self.u == 2) or (self.u == 3 and self.nonmarkovian):
+                if (self.u == 0) or (self.u == 1) or (self.u == 3 and self.nonmarkovian):
                     if (row, col) in self.red_tiles:
+                        s_next = s
+                if self.u <= 2:
+                    if (row, col) in self.purple_tiles:
                         s_next = s
             else:
                 if (self.u == 0) or (self.u == 1) or (self.u == 2) or (self.u == 3) or (self.u == 4) or (self.u == 5) \

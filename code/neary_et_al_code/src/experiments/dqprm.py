@@ -14,12 +14,7 @@ from src.Environments.rendezvous.gridworld_env import GridWorldEnv
 from src.Environments.rendezvous.multi_agent_gridworld_env import MultiAgentGridWorldEnv
 
 
-def run_qlearning_task(epsilon,
-                       tester,
-                       agent_list,
-                       nonmarkovian,
-                       verbose = False,
-                       show_print=True):
+def run_qlearning_task(epsilon, tester, agent_list, nonmarkovian, verbose=False, show_print=True):
     """
     This code runs one q-learning episode. q-functions, and accumulated reward values of agents
     are updated accordingly. If the appropriate number of steps have elapsed, this function will
@@ -27,6 +22,7 @@ def run_qlearning_task(epsilon,
 
     Parameters
     ----------
+    verbose
     nonmarkovian: whether the game is markovian?
     epsilon : float
         Numerical value in (0,1) representing likelihood of choosing a random action.
@@ -187,7 +183,7 @@ def run_multi_agent_qlearning_test(agent_list,
                                    learning_params,
                                    testing_params,
                                    nonmarkovian=False,
-                                   verbose = False,
+                                   verbose=False,
                                    show_print=True):
     """
     Run a test of the q-learning with reward machine method with the current q-function. 

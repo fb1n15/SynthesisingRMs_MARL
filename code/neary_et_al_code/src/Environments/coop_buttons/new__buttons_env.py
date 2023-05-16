@@ -422,14 +422,18 @@ class NewButtonsEnv:
         color : str
             The color of the wall that will be unlocked.
         """
-        assert color in ['red', 'yellow', 'green'], 'Color can only be one between "red", "yellow" and "green".'
+        assert color in ['red', 'yellow', 'green', 'purple'], 'Color can only be one between "red", "yellow" and "green".'
 
         if color == 'yellow':
             self.yellow_button_pushed = True
         elif color == 'green':
             self.green_button_pushed = True
-        else:
+        elif color == 'red':
             self.red_button_pushed = True
+        elif color == 'purple':
+            self.purple_button_pushed = True
+        else:
+            raise ValueError('Color can only be one between "red", "yellow", "purple" and "green".')
 
     def unlock_walls(self):
         """
@@ -438,6 +442,7 @@ class NewButtonsEnv:
         self.red_button_pushed = True
         self.yellow_button_pushed = True
         self.green_button_pushed = True
+        self.purple_button_pushed = True
 
     def reset_walls(self):
         """
@@ -446,6 +451,7 @@ class NewButtonsEnv:
         self.red_button_pushed = False
         self.yellow_button_pushed = False
         self.green_button_pushed = False
+        self.purple_button_pushed = False
 
     def get_strategy_label(self, s, s_next, option=None):
         """
@@ -551,7 +557,8 @@ class NewButtonsEnv:
         # If the appropriate button hasn't yet been pressed, don't allow the agent into the colored region
         if (not self.red_button_pushed and (row, col) in self.red_tiles) or \
                 (not self.yellow_button_pushed and (row, col) in self.yellow_tiles) or \
-                (not self.green_button_pushed and (row, col) in self.green_tiles):
+                (not self.green_button_pushed and (row, col) in self.green_tiles) or \
+                (not self.purple_button_pushed and (row, col) in self.purple_tiles):
             s_next = s
 
         last_action = a_

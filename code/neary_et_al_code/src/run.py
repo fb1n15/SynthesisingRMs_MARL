@@ -42,8 +42,11 @@ if __name__ == "__main__":
 
         num_agents = 3  # Num agents must be 3 for this example
         step_unit = 200  # Test the performance after training for every step_unit steps
-        verbose = True
-        strategy_rm = True
+        # step_unit = 1000  # Test the performance after training for every step_unit steps
+        # verbose = True
+        verbose = False
+        strategy_rm = True  # using the synthetic reward machines
+        # strategy_rm = False  # using the manual reward machines
         # Get test object from config script
         tester = new_buttons_config(num_times, num_agents, step_unit=step_unit, strategy_rm=strategy_rm,
                                     verbose=verbose)
